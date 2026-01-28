@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import api from '../../services/api'
 
 const initialState = {
-  issues: [],
+  issues: JSON.parse(localStorage.getItem('issues')) || [],
   currentIssue: null,
   loading: false,
   error: null,
@@ -13,14 +13,28 @@ const initialState = {
   },
 }
 
+// Mock function to get issues from localStorage
+const getIssuesFromStorage = () => {
+  return JSON.parse(localStorage.getItem('issues')) || []
+}
+
+// Mock function to save issue to localStorage
+const saveIssueToStorage = (issue) => {
+  const issues = getIssuesFromStorage()
+  issues.unshift(issue) // Add new issue at the beginning
+  localStorage.setItem('issues', JSON.stringify(issues))
+  return issue
+}
+
 export const fetchIssues = createAsyncThunk(
   'issues/fetchIssues',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/issues')
-      return response.data
+      // Get from localStorage instead of API
+      const issues = getIssuesFromStorage()
+      return issues
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch issues')
+      return rejectWithValue('Failed to fetch issues')
     }
   }
 )
@@ -29,22 +43,63 @@ export const fetchIssueById = createAsyncThunk(
   'issues/fetchIssueById',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/issues/${id}`)
-      return response.data
+      const issues = getIssuesFromStorage()
+      const issue = issues.find(issue => issue.id === id)
+      
+      if (!issue) {
+        throw new Error('Issue not found')
+      }
+      
+      return issue
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch issue')
+      return rejectWithValue(error.message || 'Failed to fetch issue')
     }
   }
 )
 
 export const createIssue = createAsyncThunk(
   'issues/createIssue',
-  async (issueData, { rejectWithValue }) => {
+  async (issueData, { rejectWithValue, getState }) => {
     try {
-      const response = await api.post('/issues', issueData)
-      return response.data
+      // Get current user from auth state
+      const { auth } = getState()
+      const user = auth.user
+      
+      if (!user) {
+        throw new Error('User not authenticated')
+      }
+      
+      // Create issue object
+      const newIssue = {
+        id: Date.now().toString(),
+        ...issueData,
+        priorityScore: issueData.priorityScore || 5,
+        status: 'submitted',
+        reportedBy: {
+          id: user.id,
+          name: user.name,
+          email: user.email
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        comments: [],
+        upvotes: 0,
+        // Add mock data for testing
+        location: issueData.location || 'Addis Ababa',
+        affectedPeople: parseInt(issueData.affectedPeople) || 1,
+        durationHours: parseInt(issueData.durationHours) || 1,
+        category: issueData.category || 'other',
+        severity: issueData.severity || 'medium',
+        areaImportance: issueData.areaImportance || 'medium',
+        image: issueData.image || null
+      }
+      
+      // Save to localStorage
+      const savedIssue = saveIssueToStorage(newIssue)
+      
+      return savedIssue
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to create issue')
+      return rejectWithValue(error.message || 'Failed to create issue')
     }
   }
 )
@@ -53,10 +108,26 @@ export const updateIssue = createAsyncThunk(
   'issues/updateIssue',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/issues/${id}`, data)
-      return response.data
+      const issues = getIssuesFromStorage()
+      const issueIndex = issues.findIndex(issue => issue.id === id)
+      
+      if (issueIndex === -1) {
+        throw new Error('Issue not found')
+      }
+      
+      // Update the issue
+      const updatedIssue = {
+        ...issues[issueIndex],
+        ...data,
+        updatedAt: new Date().toISOString()
+      }
+      
+      issues[issueIndex] = updatedIssue
+      localStorage.setItem('issues', JSON.stringify(issues))
+      
+      return updatedIssue
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to update issue')
+      return rejectWithValue(error.message || 'Failed to update issue')
     }
   }
 )
@@ -74,6 +145,10 @@ const issueSlice = createSlice({
     clearCurrentIssue: (state) => {
       state.currentIssue = null
     },
+    // Add new reducer to manually add an issue to state
+    addIssue: (state, action) => {
+      state.issues.unshift(action.payload)
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -107,14 +182,24 @@ const issueSlice = createSlice({
       })
       .addCase(createIssue.fulfilled, (state, action) => {
         state.loading = false
+        // Add the new issue to the beginning of the issues array
         state.issues.unshift(action.payload)
       })
       .addCase(createIssue.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
+      .addCase(updateIssue.fulfilled, (state, action) => {
+        const index = state.issues.findIndex(issue => issue.id === action.payload.id)
+        if (index !== -1) {
+          state.issues[index] = action.payload
+        }
+        if (state.currentIssue?.id === action.payload.id) {
+          state.currentIssue = action.payload
+        }
+      })
   },
 })
 
-export const { setFilters, clearFilters, clearCurrentIssue } = issueSlice.actions
+export const { setFilters, clearFilters, clearCurrentIssue, addIssue } = issueSlice.actions
 export default issueSlice.reducer

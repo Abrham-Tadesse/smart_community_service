@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import api from '../../services/api'
 
 const initialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem('user')) || null,
   token: localStorage.getItem('token'),
   loading: false,
   error: null,
@@ -15,7 +15,7 @@ export const login = createAsyncThunk(
       const response = await api.post('/auth/login', { email, password })
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Login failed')
+      return rejectWithValue(error.response?.data?.message || 'Login failed')
     }
   }
 )
@@ -24,10 +24,29 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/register', userData)
+      // Remove confirmPassword from user data
+      const { confirmPassword, ...userDataToSave } = userData
+      const response = await api.post('/auth/register', userDataToSave)
       return response.data
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Registration failed')
+      return rejectWithValue(error.response?.data?.message || 'Registration failed')
+    }
+  }
+)
+
+export const checkAuth = createAsyncThunk(
+  'auth/checkAuth',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token')
+      const user = JSON.parse(localStorage.getItem('user'))
+      
+      if (token && user) {
+        return { user, token }
+      }
+      throw new Error('Not authenticated')
+    } catch (error) {
+      return rejectWithValue(error.message)
     }
   }
 )
@@ -39,7 +58,9 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null
       state.token = null
+      state.error = null
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
     },
     clearError: (state) => {
       state.error = null
@@ -56,6 +77,7 @@ const authSlice = createSlice({
         state.user = action.payload.user
         state.token = action.payload.token
         localStorage.setItem('token', action.payload.token)
+        localStorage.setItem('user', JSON.stringify(action.payload.user))
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false
@@ -70,10 +92,15 @@ const authSlice = createSlice({
         state.user = action.payload.user
         state.token = action.payload.token
         localStorage.setItem('token', action.payload.token)
+        localStorage.setItem('user', JSON.stringify(action.payload.user))
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.user = action.payload.user
+        state.token = action.payload.token
       })
   },
 })

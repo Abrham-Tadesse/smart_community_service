@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { login } from './authSlice'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
+import { toast } from 'react-toastify'
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -26,10 +27,11 @@ const Login = () => {
     e.preventDefault()
     
     try {
-      await dispatch(login(formData)).unwrap()
+      const result = await dispatch(login(formData)).unwrap()
+      toast.success('Login successful!')
       navigate('/dashboard')
     } catch (err) {
-      console.error('Login failed:', err)
+      toast.error(err || 'Login failed. Please check your credentials.')
     }
   }
 
@@ -40,12 +42,6 @@ const Login = () => {
           <h1 className="auth-title">Welcome Back</h1>
           <p className="auth-subtitle">Sign in to your account</p>
         </div>
-
-        {error && (
-          <div className="alert alert-danger">
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <Input
@@ -89,4 +85,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Login;

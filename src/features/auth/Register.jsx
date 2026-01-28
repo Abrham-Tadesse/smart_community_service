@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { register } from './authSlice'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
+import { toast } from 'react-toastify'
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -29,15 +30,21 @@ const Register = () => {
     e.preventDefault()
     
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match')
+      toast.error('Passwords do not match')
+      return
+    }
+
+    if (formData.password.length < 6) {
+      toast.error('Password must be at least 6 characters')
       return
     }
 
     try {
-      await dispatch(register(formData)).unwrap()
+      const result = await dispatch(register(formData)).unwrap()
+      toast.success('Registration successful! Welcome to SCRPP.')
       navigate('/dashboard')
     } catch (err) {
-      console.error('Registration failed:', err)
+      toast.error(err || 'Registration failed. Please try again.')
     }
   }
 
@@ -48,12 +55,6 @@ const Register = () => {
           <h1 className="auth-title">Create Account</h1>
           <p className="auth-subtitle">Join our community platform</p>
         </div>
-
-        {error && (
-          <div className="alert alert-danger">
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <Input
@@ -93,7 +94,7 @@ const Register = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            placeholder="Create a password"
+            placeholder="Create a password (min 6 characters)"
           />
 
           <Input
@@ -127,4 +128,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default Register;

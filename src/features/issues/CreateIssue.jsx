@@ -5,6 +5,7 @@ import { createIssue } from './issueSlice'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { calculatePriorityScore } from '../../utils/priorityCalculator'
+import { toast } from 'react-toastify'
 
 const ISSUE_CATEGORIES = [
   { id: 'water', label: 'Water Supply' },
@@ -55,11 +56,33 @@ const CreateIssue = () => {
     e.preventDefault()
     
     if (!user) {
-      alert('Please login to report an issue')
+      toast.error('Please login to report an issue')
       navigate('/login')
       return
     }
 
+    // Validate required fields
+    if (!formData.title.trim()) {
+      toast.error('Please enter a title for the issue')
+      return
+    }
+    
+    if (!formData.category) {
+      toast.error('Please select a category')
+      return
+    }
+    
+    if (!formData.description.trim()) {
+      toast.error('Please enter a description')
+      return
+    }
+    
+    if (!formData.location.trim()) {
+      toast.error('Please enter a location')
+      return
+    }
+
+    // Calculate priority score
     const priorityScore = calculatePriorityScore({
       severity: formData.severity,
       affectedPeople: parseInt(formData.affectedPeople),
@@ -68,19 +91,24 @@ const CreateIssue = () => {
     })
 
     const issueData = {
-      ...formData,
+      title: formData.title,
+      category: formData.category,
+      description: formData.description,
+      severity: formData.severity,
+      location: formData.location,
+      affectedPeople: parseInt(formData.affectedPeople),
+      durationHours: parseInt(formData.durationHours),
+      areaImportance: formData.areaImportance,
       priorityScore,
-      reportedBy: user.id,
-      status: 'submitted',
-      createdAt: new Date().toISOString(),
+      image: formData.image,
     }
 
     try {
       await dispatch(createIssue(issueData)).unwrap()
-      alert('Issue reported successfully!')
+      toast.success('Issue reported successfully!')
       navigate('/issues')
     } catch (err) {
-      alert(err?.message || 'Failed to report issue')
+      toast.error(err || 'Failed to report issue')
     }
   }
 
@@ -101,7 +129,7 @@ const CreateIssue = () => {
                 <h3 className="form-section-title">Issue Details</h3>
                 
                 <Input
-                  label="Issue Title"
+                  label="Issue Title *"
                   type="text"
                   name="title"
                   value={formData.title}
@@ -111,7 +139,7 @@ const CreateIssue = () => {
                 />
 
                 <div className="input-group">
-                  <label className="input-label">Category</label>
+                  <label className="input-label">Category *</label>
                   <select
                     name="category"
                     value={formData.category}
@@ -129,7 +157,7 @@ const CreateIssue = () => {
                 </div>
 
                 <div className="input-group">
-                  <label className="input-label">Description</label>
+                  <label className="input-label">Description *</label>
                   <textarea
                     name="description"
                     value={formData.description}
@@ -159,7 +187,7 @@ const CreateIssue = () => {
                   </div>
 
                   <Input
-                    label="People Affected"
+                    label="People Affected *"
                     type="number"
                     name="affectedPeople"
                     value={formData.affectedPeople}
@@ -170,7 +198,7 @@ const CreateIssue = () => {
                 </div>
 
                 <Input
-                  label="Location"
+                  label="Location *"
                   type="text"
                   name="location"
                   value={formData.location}
