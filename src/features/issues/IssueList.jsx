@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { fetchIssues } from './issueSlice'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
+import IssueFilter from './IssueFilter'
 import { getPriorityLabel } from '../../utils/priorityCalculator'
 
 const IssueList = () => {
@@ -11,25 +12,35 @@ const IssueList = () => {
   const { issues, loading } = useSelector((state) => state.issues)
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredIssues, setFilteredIssues] = useState([])
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [priorityFilter, setPriorityFilter] = useState('')
 
   useEffect(() => {
     dispatch(fetchIssues())
   }, [dispatch])
 
   useEffect(() => {
-    // Filter issues based on search term
+    // Filter issues based on search term and selects
     const filtered = issues.filter(issue => {
       if (!issue) return false
-      
+
       const matchesSearch = !searchTerm || 
         (issue.title && issue.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (issue.description && issue.description.toLowerCase().includes(searchTerm.toLowerCase()))
-      
-      return matchesSearch
+
+      const matchesCategory = !categoryFilter || (issue.category && issue.category.toLowerCase() === categoryFilter)
+
+      const matchesStatus = !statusFilter || (issue.status && issue.status.toLowerCase() === statusFilter)
+
+      const priorityLabel = getPriorityLabel(issue.priorityScore || 5).label.toLowerCase()
+      const matchesPriority = !priorityFilter || priorityLabel === priorityFilter
+
+      return matchesSearch && matchesCategory && matchesStatus && matchesPriority
     })
-    
+
     setFilteredIssues(filtered)
-  }, [issues, searchTerm])
+  }, [issues, searchTerm, categoryFilter, statusFilter, priorityFilter])
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -93,40 +104,18 @@ const IssueList = () => {
           </button>
         </div>
 
-        {/* Filters and Search */}
-        <div className="issues-filters">
-          <div className="filter-grid">
-            <Input
-              placeholder="Search issues..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            
-            <select className="input-field">
-              <option value="">All Categories</option>
-              <option value="water">Water Supply</option>
-              <option value="electricity">Electricity</option>
-              <option value="roads">Roads & Transportation</option>
-              <option value="sanitation">Sanitation</option>
-            </select>
-
-            <select className="input-field">
-              <option value="">All Status</option>
-              <option value="submitted">Submitted</option>
-              <option value="verified">Verified</option>
-              <option value="in_progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-            </select>
-
-            <select className="input-field">
-              <option value="">All Priorities</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
-          </div>
-        </div>
+        {/* Filters and Search (moved to IssueFilter component) */}
+        <IssueFilter
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          priorityFilter={priorityFilter}
+          setPriorityFilter={setPriorityFilter}
+          onClear={() => { setSearchTerm(''); setCategoryFilter(''); setStatusFilter(''); setPriorityFilter('') }}
+        />
 
         {/* Issues List */}
         <div className="issues-list">
