@@ -1,0 +1,7 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import './assets/styles/components.css';
+@import './assets/styles/layout.css';
+@import './assets/styles/utilities.css';
+
+/* Your existing CSS variables and base styles below... */

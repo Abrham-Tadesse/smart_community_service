@@ -1,0 +1,40 @@
+[
+  {
+    "id": "1",
+    "title": "Water Supply Disruption",
+    "category": "water",
+    "description": "No water supply in the entire neighborhood for the past 48 hours. Residents are struggling to get drinking water.",
+    "severity": "critical",
+    "priorityScore": 9,
+    "status": "in_progress",
+    "location": "Bole, Addis Ababa",
+    "affectedPeople": 150,
+    "durationHours": 48,
+    "areaImportance": "high",
+    "createdAt": "2024-01-15T08:30:00Z",
+    "reportedBy": {
+      "id": "user1",
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  },
+  {
+    "id": "2",
+    "title": "Street Light Not Working",
+    "category": "electricity",
+    "description": "Street light pole #45 on Churchill Road has been dark for 2 weeks, creating safety concerns at night.",
+    "severity": "medium",
+    "priorityScore": 6,
+    "status": "submitted",
+    "location": "Churchill Road, Addis Ababa",
+    "affectedPeople": 50,
+    "durationHours": 336,
+    "areaImportance": "medium",
+    "createdAt": "2024-01-14T14:20:00Z",
+    "reportedBy": {
+      "id": "user2",
+      "name": "Jane Smith",
+      "email": "jane@example.com"
+    }
+  }
+]
