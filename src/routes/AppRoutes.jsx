@@ -23,6 +23,7 @@ import IssueManagement from '../features/admin/IssueManagement'
 import AdminProtectedRoute from '../components/common/AdminProtectedRoute'
 import CitizenDashboard from '../features/dashboard/CitizenDashboard'
 import Analytics from '../features/admin/Analytics'
+import SystemSetting from '../features/admin/SystemSetting'
 function AppRoutes() {
   const { user } = useSelector((state) => state.auth)
 
@@ -59,7 +60,8 @@ function AppRoutes() {
             <Route path="/admin/users" element={<UserManagement />} />
             <Route path="/admin/issues" element={<IssueManagement />} />
             <Route path="/admin/analytics" element={<Analytics />} />
-            {/* <Route path="/admin/settings" element={<SystemSettings />} /> */}
+              <Route path="/admin/settings" element={<SystemSetting />} />
+              {/* <Route path="/admin/settings" element={<SystemSettings />} /> */}
           </Route>
                   {/* 404 */}
           <Route path="*" element={<NotFound />} />

@@ -184,6 +184,23 @@ const issueSlice = createSlice({
         state.loading = false
         // Add the new issue to the beginning of the issues array
         state.issues.unshift(action.payload)
+        try {
+          // add notification for admin about new submitted issue
+          const notifications = JSON.parse(localStorage.getItem('notifications') || '[]')
+          notifications.unshift({
+            id: Date.now().toString(),
+            issueId: action.payload.id,
+            title: `New issue submitted: ${action.payload.title}`,
+            type: 'issue_submitted',
+            createdAt: new Date().toISOString(),
+            read: false
+          })
+          localStorage.setItem('notifications', JSON.stringify(notifications))
+          // notify UI in same window
+          window.dispatchEvent(new CustomEvent('notificationsUpdated'))
+        } catch (e) {
+          // ignore notification errors
+        }
       })
       .addCase(createIssue.rejected, (state, action) => {
         state.loading = false
@@ -196,6 +213,24 @@ const issueSlice = createSlice({
         }
         if (state.currentIssue?.id === action.payload.id) {
           state.currentIssue = action.payload
+        }
+        try {
+          // if issue was reported (status changed to 'reported') notify admin
+          if (action.payload.status === 'reported') {
+            const notifications = JSON.parse(localStorage.getItem('notifications') || '[]')
+            notifications.unshift({
+              id: Date.now().toString(),
+              issueId: action.payload.id,
+              title: `Issue reported: ${action.payload.title}`,
+              type: 'issue_reported',
+              createdAt: new Date().toISOString(),
+              read: false
+            })
+            localStorage.setItem('notifications', JSON.stringify(notifications))
+            window.dispatchEvent(new CustomEvent('notificationsUpdated'))
+          }
+        } catch (e) {
+          // ignore
         }
       })
   },

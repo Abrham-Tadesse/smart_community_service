@@ -765,6 +765,27 @@ a:hover {
   color: #1e40af;
 }
 
+/* Notification bell count */
+.notif-count {
+  display: inline-block;
+  background: #ef4444; /* red-500 */
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem; /* slightly larger */
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  margin-left: 6px;
+}
+
+.notification-bell {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  font-size: 1rem;
+}
+
 /* ========== DASHBOARD ========== */
 .dashboard-grid {
   display: grid;
