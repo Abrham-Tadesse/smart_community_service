@@ -6,64 +6,44 @@ import App from './App'
 import { store } from './app/store'
 import './index.css'
 
-// Initialize mock data if not exists
+
+
+// Update the initializeMockData function
 const initializeMockData = () => {
   if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify([
       {
         id: '1',
-        name: 'Test User',
-        email: 'test@example.com',
+        name: 'Test Citizen',
+        email: 'citizen@example.com',
         password: 'password123',
         phone: '+251911223344',
         role: 'citizen',
         createdAt: new Date().toISOString()
-      }
-    ]))
-  }
-  
-  if (!localStorage.getItem('issues')) {
-    localStorage.setItem('issues', JSON.stringify([
-      {
-        id: '1',
-        title: 'Water Supply Disruption',
-        category: 'water',
-        description: 'No water supply in the entire neighborhood for the past 48 hours.',
-        severity: 'critical',
-        priorityScore: 9,
-        status: 'in_progress',
-        location: 'Bole, Addis Ababa',
-        affectedPeople: 150,
-        durationHours: 48,
-        areaImportance: 'high',
-        reportedBy: {
-          id: '1',
-          name: 'Test User',
-          email: 'test@example.com'
-        },
-        createdAt: '2024-01-15T08:30:00Z'
       },
       {
         id: '2',
-        title: 'Street Light Not Working',
-        category: 'electricity',
-        description: 'Street light pole #45 has been dark for 2 weeks.',
-        severity: 'medium',
-        priorityScore: 6,
-        status: 'submitted',
-        location: 'Churchill Road, Addis Ababa',
-        affectedPeople: 50,
-        durationHours: 336,
-        areaImportance: 'medium',
-        reportedBy: {
-          id: '1',
-          name: 'Test User',
-          email: 'test@example.com'
-        },
-        createdAt: '2024-01-14T14:20:00Z'
-      }
+        name: 'Service Officer',
+        email: 'officer@example.com',
+        password: 'password123',
+        phone: '+251922334455',
+        role: 'officer',
+        department: 'Public Works',
+        createdAt: new Date().toISOString()
+      },
+  {
+    id: 'admin-1',
+    name: 'Administrator',
+    email: 'admin@example.com',
+    password: 'password123',
+    role: 'admin', // ← EXPLICITLY ASSIGNED HERE
+    phone: '+251933445566',
+    createdAt: new Date().toISOString()
+  }
     ]))
   }
+  
+  // ... rest of your initialization
 }
 
 // Initialize data before rendering

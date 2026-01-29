@@ -32,7 +32,6 @@ const IssueFilter = ({
         <select className="input-field" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
           <option value="">All Status</option>
           <option value="submitted">Submitted</option>
-          <option value="verified">Verified</option>
           <option value="in_progress">In Progress</option>
           <option value="resolved">Resolved</option>
         </select>

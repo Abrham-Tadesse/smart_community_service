@@ -20,7 +20,7 @@ const CitizenDashboard = () => {
   const totalIssues = issues.length
   const userTotalIssues = userIssues.length
   const userPendingIssues = userIssues.filter(issue => 
-    issue.status === 'submitted' || issue.status === 'verified'
+    issue.status === 'submitted'
   ).length
   const userResolvedIssues = userIssues.filter(issue => 
     issue.status === 'resolved'

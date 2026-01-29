@@ -46,7 +46,6 @@ const IssueList = () => {
     switch(status) {
       case 'resolved': return 'badge-success'
       case 'in_progress': return 'badge-info'
-      case 'verified': return 'badge-primary'
       case 'submitted': return 'badge-warning'
       default: return 'badge-warning'
     }
