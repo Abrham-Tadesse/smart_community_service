@@ -46,8 +46,8 @@ const Contact = () => {
               <div className="flex items-center gap-4">
                 <div className="text-primary-600 text-xl">📞</div>
                 <div>
-                  <p className="font-medium">+251 11 123 4567</p>
-                  <p className="text-gray-600">Mon-Fri 9am-5pm EAT</p>
+                  <p className="font-medium">+251 11 111 1111</p>
+                  <p className="text-gray-600">Mon-Fri 2:30am-5:30pm EAT</p>
                 </div>
               </div>
               
@@ -62,7 +62,7 @@ const Contact = () => {
               <div className="flex items-center gap-4">
                 <div className="text-primary-600 text-xl">📍</div>
                 <div>
-                  <p className="font-medium">Addis Ababa, Ethiopia</p>
+                  <p className="font-medium">Bahir Dar, Ethiopia</p>
                   <p className="text-gray-600">Headquarters</p>
                 </div>
               </div>

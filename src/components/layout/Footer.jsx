@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import logo from '../../assets/image/logo.png'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -10,7 +11,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="footer-section">
             <div className="flex items-center gap-2 mb-4">
-              <div className="navbar-logo">SCR</div>
+              <img src={logo} alt="Logo" className="navbar-logo" />
               <span className="font-bold">SCRPP</span>
             </div>
             <p>Smart Community Request & Prioritization Platform</p>
@@ -34,8 +35,6 @@ const Footer = () => {
             <ul className="footer-links">
               <li><Link to="/issues/create">Report Issue</Link></li>
               <li><Link to="/dashboard">Dashboard</Link></li>
-              <li><Link to="/faq">FAQ</Link></li>
-              <li><Link to="/privacy">Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -43,8 +42,8 @@ const Footer = () => {
           <div className="footer-section">
             <h3>Contact Us</h3>
             <ul className="footer-links">
-              <li>Addis Ababa, Ethiopia</li>
-              <li>+251 11 123 4567</li>
+              <li>Bahir Dar, Ethiopia</li>
+              <li>+251 11 111 1111</li>
               <li>support@scrpp.gov.et</li>
             </ul>
           </div>

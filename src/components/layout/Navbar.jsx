@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../../features/auth/authSlice'
 import { useCallback } from 'react'
+import logo from '../../assets/image/logo.png'
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -74,7 +75,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="container navbar-container">
         <Link to="/" className="navbar-brand">
-          <div className="navbar-logo">SCR</div>
+          <img src={logo} alt="Logo" className="navbar-logo" />
           <span>SCRPP</span>
           <span className="navbar-subtitle">Community Platform</span>
         </Link>
