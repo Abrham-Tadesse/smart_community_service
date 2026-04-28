@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import api from '../../services/api'
+import  {registerUser } from '../../services/authApi';
+import API from '../../services/api';
+
+
 
 const initialState = {
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -10,12 +13,12 @@ const initialState = {
 
 export const login = createAsyncThunk(
   'auth/login',
-  async ({ email, password }, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/login', { email, password })
-      return response.data
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed')
+      const res = await loginUser(data)
+      return res.data
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message)
     }
   }
 )
@@ -26,8 +29,10 @@ export const register = createAsyncThunk(
     try {
       // Remove confirmPassword from user data
       const { confirmPassword, ...userDataToSave } = userData
-      const response = await api.post('/auth/register', userDataToSave)
+      const response = await registerUser(userDataToSave);
+      // localStorage.setItem('token', response.data.token)
       return response.data
+
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Registration failed')
     }

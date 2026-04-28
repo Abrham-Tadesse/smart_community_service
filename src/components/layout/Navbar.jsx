@@ -75,7 +75,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="container navbar-container">
         <Link to="/" className="navbar-brand">
-          <img src={logo} alt="Logo" className="navbar-logo" />
+          <img src={logo}K alt="Logo" className="navbar-logo" />
           <span>SCRPP</span>
           <span className="navbar-subtitle">Community Platform</span>
         </Link>
