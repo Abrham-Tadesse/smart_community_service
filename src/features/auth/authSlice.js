@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import  {registerUser } from '../../services/authApi';
 import API from '../../services/api';
+import  {registerUser } from '../../services/userServices';
+import { loginUser } from '../../services/userServices';
 
 
 
@@ -18,6 +19,7 @@ export const login = createAsyncThunk(
       const res = await loginUser(data)
       return res.data
     } catch (err) {
+      console.log(err.message);
       return rejectWithValue(err.response?.data?.message)
     }
   }

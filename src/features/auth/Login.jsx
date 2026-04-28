@@ -25,12 +25,16 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log("SUBMIT TRIGGERED")
     
     try {
+      console.log("Before dispatch")
       const result = await dispatch(login(formData)).unwrap()
+      console.log("After dispatch");
       toast.success('Login successful!')
       navigate('/dashboard')
     } catch (err) {
+      console.log(err.message);
       toast.error(err || 'Login failed. Please check your credentials.')
     }
   }

@@ -1,5 +1,7 @@
 
 export const endpoints = {
-  login: '/api/users/login',
-  register: '/api/users',
+  login: '/users/login',
+  register: '/users',
+  me : "/users/me",
+  
 }
