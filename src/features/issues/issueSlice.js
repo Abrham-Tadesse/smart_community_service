@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import api from '../../services/api'
+import API from '../../services/api';
+import { createIssues } from '../../services/issueService';
 
 const initialState = {
   issues: JSON.parse(localStorage.getItem('issues')) || [],
@@ -95,9 +96,8 @@ export const createIssue = createAsyncThunk(
       }
       
       // Save to localStorage
-      const savedIssue = saveIssueToStorage(newIssue)
-      
-      return savedIssue
+      const response = await createIssues(newIssue);     
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to create issue')
     }
