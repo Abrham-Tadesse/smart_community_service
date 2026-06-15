@@ -22,7 +22,7 @@ const IssueList = () => {
 
   useEffect(() => {
     // Filter issues based on search term and selects
-    const filtered = issues.filter(issue => {
+    const filtered = issues?.filter(issue => {
       if (!issue) return false
 
       const matchesSearch = !searchTerm || 
@@ -93,8 +93,8 @@ const IssueList = () => {
 
         {/* Debug info - remove in production */}
         <div className="alert alert-info mb-4">
-          <p>Total issues in storage: {issues.length}</p>
-          <p>Filtered issues: {filteredIssues.length}</p>
+          <p>Total issues in storage: {issues?.length}</p>
+          <p>Filtered issues: {filteredIssues?.length}</p>
           <button 
             onClick={() => console.log('All issues:', issues)}
             className="btn btn-outline btn-small mt-2"
@@ -123,15 +123,15 @@ const IssueList = () => {
               <div className="loading-spinner"></div>
               <p className="mt-4 text-gray-600">Loading issues...</p>
             </div>
-          ) : filteredIssues.length > 0 ? (
+          ) : filteredIssues?.length > 0 ? (
             filteredIssues.map((issue) => {
               const priorityInfo = getPriorityLabel(issue.priorityScore || 5)
               
               return (
-                <div key={issue.id} className="issue-item">
+                <div key={issue._id} className="issue-item">
                   <div className="issue-header">
                     <div>
-                      <Link to={`/issues/${issue.id}`} className="issue-title">
+                      <Link to={`/issues/${issue._id}`} className="issue-title">
                         {issue.title || 'Untitled Issue'}
                       </Link>
                       <div className="flex items-center gap-2 mt-2">
@@ -147,7 +147,7 @@ const IssueList = () => {
                       </div>
                     </div>
                     
-                    <Link to={`/issues/${issue.id}`} className="btn btn-outline">
+                    <Link to={`/issues/${issue._id}`} className="btn btn-outline">
                       View Details
                     </Link>
                   </div>

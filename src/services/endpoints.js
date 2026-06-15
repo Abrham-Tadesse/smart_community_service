@@ -6,5 +6,5 @@ export const endpoints = {
 
   // issue endpoins
   create : "/issues",
-  
+  read : "/issues",
 }

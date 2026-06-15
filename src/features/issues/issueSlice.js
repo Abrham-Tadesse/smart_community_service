@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import API from '../../services/api';
-import { createIssues } from '../../services/issueService';
+import { createIssues,readIssues } from '../../services/issueService';
+
 
 const initialState = {
   issues: JSON.parse(localStorage.getItem('issues')) || [],
@@ -20,22 +21,27 @@ const getIssuesFromStorage = () => {
 }
 
 // Mock function to save issue to localStorage
-const saveIssueToStorage = (issue) => {
-  const issues = getIssuesFromStorage()
-  issues.unshift(issue) // Add new issue at the beginning
-  localStorage.setItem('issues', JSON.stringify(issues))
-  return issue
-}
+        // const saveIssueToStorage = (issue) => {
+        //   const issues = getIssuesFromStorage()
+        //   issues.unshift(issue) // Add new issue at the beginning
+        //   localStorage.setItem('issues', JSON.stringify(issues))
+        //   return issue
+        // }
+
+
 
 export const fetchIssues = createAsyncThunk(
   'issues/fetchIssues',
   async (_, { rejectWithValue }) => {
     try {
-      // Get from localStorage instead of API
-      const issues = getIssuesFromStorage()
-      return issues
+      // Get from API  instead of localStorage
+      const issues = readIssues();
+      return issues.data;
+
     } catch (error) {
-      return rejectWithValue('Failed to fetch issues')
+       return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch issues'
+      )
     }
   }
 )
@@ -45,7 +51,7 @@ export const fetchIssueById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const issues = getIssuesFromStorage()
-      const issue = issues.find(issue => issue.id === id)
+      const issue = issues.find(issue => issue._id === id)
       
       if (!issue) {
         throw new Error('Issue not found')
@@ -109,7 +115,7 @@ export const updateIssue = createAsyncThunk(
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const issues = getIssuesFromStorage()
-      const issueIndex = issues.findIndex(issue => issue.id === id)
+      const issueIndex = issues.findIndex(issue => issue._id === id)
       
       if (issueIndex === -1) {
         throw new Error('Issue not found')
@@ -207,11 +213,11 @@ const issueSlice = createSlice({
         state.error = action.payload
       })
       .addCase(updateIssue.fulfilled, (state, action) => {
-        const index = state.issues.findIndex(issue => issue.id === action.payload.id)
+        const index = state.issues.findIndex(issue => issue._id === action.payload.id)
         if (index !== -1) {
           state.issues[index] = action.payload
         }
-        if (state.currentIssue?.id === action.payload.id) {
+        if (state.currentIssue?._id === action.payload.id) {
           state.currentIssue = action.payload
         }
         try {
