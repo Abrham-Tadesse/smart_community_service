@@ -16,3 +16,7 @@ export const getProfile = () => {
 export const updateProfile = (data)=>{
   return API.patch(endpoints.me,data);
 }
+
+export const passwordUpdate = (data) =>{
+  return API.patch(endpoints.password,data);
+}

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { toast } from 'react-toastify'
-import { updateProfiles } from '../auth/authSlice'
+import { updateProfiles,updatePassword } from '../auth/authSlice'
 
 const ProfileSettings = () => {
   const dispatch = useDispatch()
@@ -42,6 +42,8 @@ const ProfileSettings = () => {
     }
   }
 
+
+  //Handle profile change
 const handleProfileUpdate = async (e) => {
   e.preventDefault();
   setIsLoading(true);
@@ -61,51 +63,39 @@ const handleProfileUpdate = async (e) => {
   }
 };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault()
-    
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('New passwords do not match')
-      return
-    }
-    
-    if (formData.newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters')
-      return
-    }
-    
-    setIsLoading(true)
-    
-    try {
-      // Update password in localStorage
-      const users = JSON.parse(localStorage.getItem('users') || '[]')
-      const userIndex = users.findIndex(u => u.id === user.id)
-      
-      if (userIndex !== -1) {
-        // In real app, verify current password first
-        users[userIndex] = {
-          ...users[userIndex],
-          password: formData.newPassword,
-          updatedAt: new Date().toISOString()
-        }
-        
-        localStorage.setItem('users', JSON.stringify(users))
-        toast.success('Password changed successfully!')
-        
-        // Clear password fields
-        setFormData(prev => ({
-          ...prev,
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        }))
-      }
-    } catch (error) {
-      toast.error('Failed to change password')
-    } finally {
-      setIsLoading(false)
-    }
+// Handlde password change
+const handlePasswordChange = async (e) => {
+  e.preventDefault();
+  if (formData.newPassword !== formData.confirmPassword) {
+    toast.error("New passwords do not match");
+    return;
   }
+  if (formData.newPassword.length < 6) {
+    toast.error("Password must be at least 6 characters");
+    return;
+  }
+  setIsLoading(true);
+  try {
+    await dispatch(
+      updatePassword({
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+      })
+    ).unwrap();
+    toast.success("Password changed successfully!");
+    setFormData(prev => ({
+      ...prev,
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    }));
+  } catch (error) {
+    toast.error(error || "Failed to change password");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="page-container">

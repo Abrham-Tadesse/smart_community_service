@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import API from '../../services/api';
-import  {registerUser,updateProfile,loginUser } from '../../services/userServices';
+import  {registerUser,updateProfile,loginUser,passwordUpdate } from '../../services/userServices';
 
 
 
@@ -72,6 +72,21 @@ export const checkAuth = createAsyncThunk(
   }
  )
 
+// update the password
+export const updatePassword = createAsyncThunk(
+  "profile/profileSetting", async(data,{rejectWithValue}) => {
+    try{
+     const response = await passwordUpdate(data);
+     return response.data;
+    }catch(e){
+      return rejectWithValue(
+        e.response?.data || e.message
+      )
+    }
+  }
+)
+
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -126,6 +141,10 @@ const authSlice = createSlice({
       .addCase(updateProfiles.fulfilled , (state , action)=>{
         state.user = action.payload;
         localStorage.setItem("user", JSON.stringify(action.payload))
+      })
+      .addCase(updatePassword.fulfilled, (state,action) =>{
+        state.user = action.payload;
+
       })
   },
 })
