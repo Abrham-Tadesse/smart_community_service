@@ -8,3 +8,7 @@ export const createIssues = (data) =>{
 export const readIssues = () =>{
     return API.get(endpoints.read);
 }
+
+export const readById = (id)=>{
+     return API.get(`${endpoints.read}/${id}`);
+}

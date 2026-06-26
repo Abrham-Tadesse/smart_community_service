@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import API from '../../services/api';
-import { createIssues,readIssues } from '../../services/issueService';
+import { createIssues,readIssues,readById } from '../../services/issueService';
 
 
 const initialState = {
@@ -16,9 +16,9 @@ const initialState = {
 }
 
 // Mock function to get issues from localStorage
-const getIssuesFromStorage = () => {
-  return JSON.parse(localStorage.getItem('issues')) || []
-}
+      // const getIssuesFromStorage = () => {
+      //   return JSON.parse(localStorage.getItem('issues')) || []
+      // }
 
 // Mock function to save issue to localStorage
         // const saveIssueToStorage = (issue) => {
@@ -35,8 +35,9 @@ export const fetchIssues = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       // Get from API  instead of localStorage
-      const issues = readIssues();
-      return issues.data;
+      const response = await readIssues();
+      // console.log(response.data);
+      return response.data;
 
     } catch (error) {
        return rejectWithValue(
@@ -46,23 +47,19 @@ export const fetchIssues = createAsyncThunk(
   }
 )
 
-export const fetchIssueById = createAsyncThunk(
-  'issues/fetchIssueById',
-  async (id, { rejectWithValue }) => {
-    try {
-      const issues = getIssuesFromStorage()
-      const issue = issues.find(issue => issue._id === id)
-      
-      if (!issue) {
-        throw new Error('Issue not found')
-      }
-      
-      return issue
-    } catch (error) {
-      return rejectWithValue(error.message || 'Failed to fetch issue')
-    }
-  }
-)
+                export const fetchIssueById = createAsyncThunk(
+                  'issues/fetchIssueById',
+                  async (id, { rejectWithValue }) => {
+                    try {
+                      const response = await readById(id);
+                      
+                      return response.data;
+                    } catch (error) {
+                      return rejectWithValue(error.response?.data || error.message);
+                    }
+                  }
+                )
+
 
 export const createIssue = createAsyncThunk(
   'issues/createIssue',
@@ -110,28 +107,13 @@ export const createIssue = createAsyncThunk(
   }
 )
 
+
 export const updateIssue = createAsyncThunk(
   'issues/updateIssue',
-  async ({ id, data }, { rejectWithValue }) => {
+  async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const issues = getIssuesFromStorage()
-      const issueIndex = issues.findIndex(issue => issue._id === id)
-      
-      if (issueIndex === -1) {
-        throw new Error('Issue not found')
-      }
-      
-      // Update the issue
-      const updatedIssue = {
-        ...issues[issueIndex],
-        ...data,
-        updatedAt: new Date().toISOString()
-      }
-      
-      issues[issueIndex] = updatedIssue
-      localStorage.setItem('issues', JSON.stringify(issues))
-      
-      return updatedIssue
+     const response = await API.patch(`/issues/${id}`, updatedData);
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to update issue')
     }
