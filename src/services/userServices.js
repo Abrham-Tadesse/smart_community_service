@@ -12,3 +12,7 @@ export const loginUser = (data) => {
 export const getProfile = () => {
   return API.get(endpoints.me);
 };
+
+export const updateProfile = (data)=>{
+  return API.patch(endpoints.me,data);
+}

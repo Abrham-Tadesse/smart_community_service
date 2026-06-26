@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { toast } from 'react-toastify'
+import { updateProfiles } from '../auth/authSlice'
 
 const ProfileSettings = () => {
   const dispatch = useDispatch()
@@ -41,44 +42,24 @@ const ProfileSettings = () => {
     }
   }
 
-  const handleProfileUpdate = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    
-    try {
-      // Update user in localStorage
-      const users = JSON.parse(localStorage.getItem('users') || '[]')
-      const userIndex = users.findIndex(u => u.id === user.id)
-      
-      if (userIndex !== -1) {
-        users[userIndex] = {
-          ...users[userIndex],
-          name: formData.name,
-          phone: formData.phone,
-          notifications: formData.notifications,
-          updatedAt: new Date().toISOString()
-        }
-        
-        localStorage.setItem('users', JSON.stringify(users))
-        
-        // Update current user in localStorage
-        const currentUser = {
-          ...user,
-          name: formData.name,
-          phone: formData.phone,
-          notifications: formData.notifications
-        }
-        localStorage.setItem('user', JSON.stringify(currentUser))
-        
-        // Update Redux store (you'd need to dispatch an action)
-        toast.success('Profile updated successfully!')
-      }
-    } catch (error) {
-      toast.error('Failed to update profile')
-    } finally {
-      setIsLoading(false)
-    }
+const handleProfileUpdate = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+
+  try {
+    await dispatch(updateProfiles({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+    })).unwrap();
+
+    toast.success("Profile updated successfully!");
+  } catch (error) {
+    toast.error(error || "Failed to update profile");
+  } finally {
+    setIsLoading(false);
   }
+};
 
   const handlePasswordChange = async (e) => {
     e.preventDefault()

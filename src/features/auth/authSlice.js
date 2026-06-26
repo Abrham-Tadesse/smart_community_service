@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import API from '../../services/api';
-import  {registerUser } from '../../services/userServices';
-import { loginUser } from '../../services/userServices';
+import  {registerUser,updateProfile,loginUser } from '../../services/userServices';
 
 
 
@@ -12,6 +11,7 @@ const initialState = {
   error: null,
 }
 
+// Login
 export const login = createAsyncThunk(
   'auth/login',
   async (data, { rejectWithValue }) => {
@@ -25,6 +25,7 @@ export const login = createAsyncThunk(
   }
 )
 
+//Register
 export const register = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
@@ -40,7 +41,7 @@ export const register = createAsyncThunk(
     }
   }
 )
-
+// Authenticate the user it has a token or not in other word it is legitimate or not
 export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
   async (_, { rejectWithValue }) => {
@@ -57,6 +58,19 @@ export const checkAuth = createAsyncThunk(
     }
   }
 )
+// Update profile settings
+ export const updateProfiles = createAsyncThunk(
+  "profile/profileSettings",async(data,{rejectWithValue}) => {
+    try{
+       const response = await updateProfile(data);
+       return response.data;
+    }catch(e){
+      return rejectWithValue(
+        e.response?.data || e.message
+      );
+    }
+  }
+ )
 
 const authSlice = createSlice({
   name: 'auth',
@@ -108,6 +122,10 @@ const authSlice = createSlice({
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.user = action.payload.user
         state.token = action.payload.token
+      })
+      .addCase(updateProfiles.fulfilled , (state , action)=>{
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload))
       })
   },
 })
