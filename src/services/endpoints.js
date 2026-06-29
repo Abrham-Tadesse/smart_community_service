@@ -8,5 +8,10 @@ export const endpoints = {
   create : "/issues",
   read : "/issues",
   update : "/issues",
+
+  //comment`s end points 
+  comments : (issueId)=> `/comments/issues/${issueId}/comments`,
+
+
   
 }

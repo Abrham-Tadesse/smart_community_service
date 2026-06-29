@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchIssueById, updateIssue } from "./issueSlice";
 import Button from "../../components/common/Button";
 import { getPriorityLabel } from "../../utils/priorityCalculator";
+import { createComment, fetchComments } from "../comments/commentSlice";
+// import { readComments } from "../../services/commentServices";
 
 const IssueDetails = () => {
   const { id } = useParams();
@@ -17,7 +19,7 @@ const IssueDetails = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   // console.log("Id " + id);
-  console.log("current Issue " , currentIssue);
+  // console.log("current Issue " , currentIssue);
 
   useEffect(() => {
     if (id) {
@@ -49,6 +51,45 @@ const IssueDetails = () => {
       minute: "2-digit",
     });
   };
+
+const handleCommentSubmit = async() => {
+      if(!commentText.trim()){
+        alert ("Comment can`t be empty");
+        return ;
+      }
+      //
+      console.log("comment is exist");
+
+      setActionLoading(true);
+      try{
+        console.log("starting the try block");
+
+        await dispatch(createComment({
+          issueId : id,
+          data : {
+            message : commentText.trim()
+          },
+        })).unwrap();
+        //
+        console.log("comment is dispatched ");
+
+          await dispatch(fetchComments(currentIssue._id));
+          console.log("issue is found");
+             setCommentText("");
+             setShowCommentForm(false);
+
+
+      }catch(e){
+          //  console.error(e);
+          // alert("Failed to add comment");
+          console.error("Create comment error:", e);
+          alert(JSON.stringify(e));
+      } finally {
+      setActionLoading(false);
+  }
+
+}
+
 
   if (loading) {
     return (
@@ -297,44 +338,9 @@ const IssueDetails = () => {
                         onChange={(e) => setCommentText(e.target.value)}
                       />
                       <div className="mt-2 flex gap-2">
-                        <Button
-                          onClick={async () => {
-                            if (!commentText.trim())
-                              return alert("Comment cannot be empty");
-                            setActionLoading(true);
-                            try {
-                              const comments = currentIssue.comments || [];
-                              const newComment = {
-                                id: Date.now().toString(),
-                                text: commentText.trim(),
-                                author: user
-                                  ? { id: user._id, name: user.name }
-                                  : { name: "Anonymous" },
-                                createdAt: new Date().toISOString(),
-                              };
-                              const updated = {
-                                ...currentIssue,
-                                comments: [newComment, ...comments],
-                              };
-                              await dispatch(
-                                updateIssue({
-                                  id: currentIssue._id,
-                                  data: updated,
-                                }),
-                              );
-                              await dispatch(fetchIssueById(currentIssue._id));
-                              setCommentText("");
-                              setShowCommentForm(false);
-                            } catch (err) {
-                              console.error(err);
-                              alert("Failed to add comment");
-                            } finally {
-                              setActionLoading(false);
-                            }
-                          }}
-                        >
-                          {actionLoading ? "Adding..." : "Submit Comment"}
-                        </Button>
+                     <Button onClick={handleCommentSubmit}>
+                        {actionLoading ? "Adding..." : "Submit Comment"}
+                      </Button>
                         <Button
                           variant="outline"
                           onClick={() => {

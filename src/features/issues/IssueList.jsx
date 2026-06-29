@@ -182,7 +182,7 @@ const IssueList = () => {
               )
             })
           ) : (
-            <div className="card-body text-center">
+            <div className="card-body text-center" >
               <div className="text-gray-400 text-5xl mb-4">📝</div>
               <h3 className="mb-2">No issues found</h3>
               <p className="mb-4 text-gray-600">
