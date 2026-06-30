@@ -89,7 +89,6 @@ const CreateIssue = () => {
       durationHours: parseInt(formData.durationHours),
       areaImportance: formData.areaImportance,
     })
-
     const issueData = {
       title: formData.title,
       category: formData.category,
@@ -102,7 +101,6 @@ const CreateIssue = () => {
       priorityScore,
       image: formData.image,
     }
-
     try {
       await dispatch(createIssue(issueData)).unwrap()
       toast.success('Issue reported successfully!')

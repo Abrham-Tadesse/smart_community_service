@@ -5,7 +5,7 @@ import { fetchIssueById, updateIssue } from "./issueSlice";
 import Button from "../../components/common/Button";
 import { getPriorityLabel } from "../../utils/priorityCalculator";
 import { createComment, fetchComments } from "../comments/commentSlice";
-// import { readComments } from "../../services/commentServices";
+
 
 const IssueDetails = () => {
   const { id } = useParams();
@@ -13,22 +13,11 @@ const IssueDetails = () => {
   const dispatch = useDispatch();
   const { currentIssue} = useSelector((state) => state.issues);
   const {comments, loading} = useSelector((state)=>state.comments);
-
-    // const issueState = useSelector((state) => state.issues);
-    // console.log(issueState);
-
   const { user } = useSelector((state) => state.auth);
 
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
-
-  // console.log("Id " + id);
-  // console.log("current Issue " , currentIssue);
-
-
-// console.log(comments);
-
 
   useEffect(() => {
     if (id) {
@@ -68,11 +57,9 @@ const handleCommentSubmit = async() => {
         return ;
       }
       //
-      console.log("comment is exist");
 
       setActionLoading(true);
       try{
-        console.log("starting the try block");
 
         await dispatch(createComment({
           issueId : id,
@@ -80,14 +67,9 @@ const handleCommentSubmit = async() => {
             message : commentText.trim()
           },
         })).unwrap();
-        //
-        console.log("comment is dispatched ");
-
           await dispatch(fetchComments(currentIssue._id));
-          console.log("issue is found");
              setCommentText("");
              setShowCommentForm(false);
-
 
       }catch(e){
           //  console.error(e);
@@ -241,7 +223,7 @@ const handleCommentSubmit = async() => {
                             Reported By:{" "}
                           </span>
                           <span className="font-medium">
-                            {currentIssue.reportedBy?.name || "Anonymous"}
+                            {currentIssue.creator?.name || "Anonymous"}
                           </span>
                         </p>
                       </div>
@@ -252,7 +234,7 @@ const handleCommentSubmit = async() => {
                             Contact:{" "}
                           </span>
                           <span className="font-medium">
-                            {currentIssue.reportedBy?.email || "Not available"}
+                            {currentIssue.creator?.email || "Not available"}
                           </span>
                         </p>
                       </div>
