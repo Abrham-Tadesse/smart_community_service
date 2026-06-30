@@ -3,10 +3,11 @@ import API from '../../services/api';
 import { createComments, readComments } from '../../services/commentServices';
 
 const initialState = {
-  comments: [],
+  issues: [],
+  currentIssue: null,
+  comments: [],   
   loading: false,
   error: null,
-  message : null
 };
 
 

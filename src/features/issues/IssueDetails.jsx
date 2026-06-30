@@ -11,7 +11,12 @@ const IssueDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { currentIssue, loading } = useSelector((state) => state.issues);
+  const { currentIssue} = useSelector((state) => state.issues);
+  const {comments, loading} = useSelector((state)=>state.comments);
+
+    // const issueState = useSelector((state) => state.issues);
+    // console.log(issueState);
+
   const { user } = useSelector((state) => state.auth);
 
   const [showCommentForm, setShowCommentForm] = useState(false);
@@ -21,9 +26,14 @@ const IssueDetails = () => {
   // console.log("Id " + id);
   // console.log("current Issue " , currentIssue);
 
+
+// console.log(comments);
+
+
   useEffect(() => {
     if (id) {
       dispatch(fetchIssueById(id));
+      dispatch(fetchComments(id));
       
     }
   }, [id, dispatch]);
@@ -361,21 +371,21 @@ const handleCommentSubmit = async() => {
               <h3 className="mb-4">Updates & Comments</h3>
               <div className="card">
                 <div className="card-body">
-                  {currentIssue.comments && currentIssue.comments.length > 0 ? (
+                  {comments && comments.length > 0 ? (
                     <div className="space-y-4">
-                      {currentIssue.comments.map((c) => (
+                      {comments.map((c) => (
                         <div key={c.id} className="border rounded p-3">
                           <div className="flex justify-between items-center">
                             <div>
+                              <p>{c.message}</p>
                               <p className="font-medium">
-                                {c.author?.name || "Anonymous"}
+                                {c.user?.name || "Anonymous"}
                               </p>
-                              <p className="text-sm text-gray-500">
+                              <small className="text-sm text-gray-500">
                                 {new Date(c.createdAt).toLocaleString()}
-                              </p>
+                              </small>
                             </div>
                           </div>
-                          <p className="mt-2">{c.text}</p>
                         </div>
                       ))}
                     </div>
