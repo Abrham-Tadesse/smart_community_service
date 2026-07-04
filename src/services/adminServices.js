@@ -1,0 +1,32 @@
+import API from "./api";
+import { endpoints } from "./endpoints";
+
+export const dashboard = ()=>{
+    return API.get(endpoints.dashboard);
+}
+
+export const allUsers = ()=>{
+    return API.get(endpoints.allUser);
+}
+
+export const role = (userId) =>{
+    return API.patch(endpoints.changeRole(userId));
+}
+
+export const deleteUsers = (userId)=>{
+    return API.delete(`${endpoints.allUser}/${userId}`);
+}
+
+// ISSUE CASE 
+
+export const allIssues = ()=>{
+    return API.get(endpoints.allIssue);
+}
+
+export const status = (issueId)=>{
+     return API.patch(endpoints.changeStatus(issueId));
+}
+
+export const deleteIssue = (issueId)=>{
+    return API.delete(`${endpoints.allIssue}/${issueId}`);
+}

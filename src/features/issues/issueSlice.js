@@ -15,26 +15,12 @@ const initialState = {
   },
 }
 
-// Mock function to get issues from localStorage
-      // const getIssuesFromStorage = () => {
-      //   return JSON.parse(localStorage.getItem('issues')) || []
-      // }
-
-// Mock function to save issue to localStorage
-        // const saveIssueToStorage = (issue) => {
-        //   const issues = getIssuesFromStorage()
-        //   issues.unshift(issue) // Add new issue at the beginning
-        //   localStorage.setItem('issues', JSON.stringify(issues))
-        //   return issue
-        // }
-
 
 
 export const fetchIssues = createAsyncThunk(
   'issues/fetchIssues',
   async (_, { rejectWithValue }) => {
     try {
-      // Get from API  instead of localStorage
       const response = await readIssues();
       // console.log(response.data);
       return response.data;

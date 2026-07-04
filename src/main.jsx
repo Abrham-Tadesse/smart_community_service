@@ -21,47 +21,6 @@ setFavicon()
 
 
 
-// Update the initializeMockData function
-const initializeMockData = () => {
-  if (!localStorage.getItem('users')) {
-    localStorage.setItem('users', JSON.stringify([
-      {
-        id: '1',
-        name: 'Test Citizen',
-        email: 'citizen@example.com',
-        password: 'password123',
-        phone: '+251911223344',
-        role: 'citizen',
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: '2',
-        name: 'Service Officer',
-        email: 'officer@example.com',
-        password: 'password123',
-        phone: '+251922334455',
-        role: 'officer',
-        department: 'Public Works',
-        createdAt: new Date().toISOString()
-      },
-  {
-    id: 'admin-1',
-    name: 'Administrator',
-    email: 'admin@example.com',
-    password: 'password123',
-    role: 'admin', // ← EXPLICITLY ASSIGNED HERE
-    phone: '+251933445566',
-    createdAt: new Date().toISOString()
-  }
-    ]))
-  }
-  
-  // ... rest of your initialization
-}
-
-// Initialize data before rendering
-initializeMockData()
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>

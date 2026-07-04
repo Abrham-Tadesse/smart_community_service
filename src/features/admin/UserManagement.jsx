@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
+import { accessingAllUsers } from './adminSlice';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([])
@@ -10,10 +11,15 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
   const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch();
+
+
 
   useEffect(() => {
-    loadUsers()
-  }, [])
+    // loadUsers()
+     dispatch(accessingAllUsers());
+     
+  }, [dispatch])
 
   useEffect(() => {
     filterUsers()
@@ -46,9 +52,7 @@ const UserManagement = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     if (!confirm(`Change this user's role to ${newRole}?`)) return
-    
-    setLoading(true)
-    
+    setLoading(true) 
     try {
       // Update in localStorage
       const updatedUsers = users.map(user => 

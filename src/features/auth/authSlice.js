@@ -16,11 +16,11 @@ export const login = createAsyncThunk(
   'auth/login',
   async (data, { rejectWithValue }) => {
     try {
-      const res = await loginUser(data)
-      return res.data
+      const res = await loginUser(data);
+      return res.data;
     } catch (err) {
-      console.log(err.message);
-      return rejectWithValue(err.response?.data?.message)
+      // console.log(err.message);
+      return rejectWithValue(err.response?.data?.message);
     }
   }
 )
