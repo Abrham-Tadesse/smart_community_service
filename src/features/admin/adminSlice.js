@@ -21,7 +21,7 @@ const initialState = {
   message: null,
 };
 
-export const adminDashboard = createAsyncThunk("/admin/usermanagement", 
+export const adminDashboard = createAsyncThunk("/admin/dashboard", 
   async(_, {rejectWithValue})=>{
     try {
 
@@ -35,7 +35,7 @@ export const adminDashboard = createAsyncThunk("/admin/usermanagement",
   }
 )
 
-export const accessingAllUsers = createAsyncThunk("/admin/userManagement", 
+export const accessingAllUsers = createAsyncThunk("/admin/allusers", 
     async(_, {rejecWithValue})=>{
        
        try { 
@@ -48,10 +48,10 @@ export const accessingAllUsers = createAsyncThunk("/admin/userManagement",
 
 })
 
-export const roleChange = createAsyncThunk("/admin/userManagement",
-   async(id, {rejecWithValue})=>{
+export const roleChange = createAsyncThunk("/admin/roleChange",
+   async({id,newRole}, {rejecWithValue})=>{
     try {
-      const response = await role(id);
+      const response = await role(id,newRole);
       return response.data;
 
     } catch (e) {
@@ -60,7 +60,7 @@ export const roleChange = createAsyncThunk("/admin/userManagement",
 
 })
 
-export const deleteCitizen = createAsyncThunk("/admin/userManagement",
+export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
   async(id, {rejectWithValue})=>{
    try {
 
@@ -73,7 +73,7 @@ export const deleteCitizen = createAsyncThunk("/admin/userManagement",
 
   }) 
 
-  export const accessingAllIssues = createAsyncThunk("/admin/userManagement", 
+  export const accessingAllIssues = createAsyncThunk("/admin/allIssue", 
      async(_, {rejectWithValue})=>{
         try {
 
@@ -87,7 +87,7 @@ export const deleteCitizen = createAsyncThunk("/admin/userManagement",
      
     })
 
-    export const changeStatus = createAsyncThunk("/admin/userManagement",
+    export const changeStatus = createAsyncThunk("/admin/changeStatus",
       async(id,{rejectWithValue})=>{
           try {
 
@@ -100,7 +100,7 @@ export const deleteCitizen = createAsyncThunk("/admin/userManagement",
           }
       })
 
-    export const deleteIssues = createAsyncThunk("/admin/userManagement",
+    export const deleteIssues = createAsyncThunk("/admin/deleteIssue",
       async(id, {rejectWithValue})=>{
         try {
           const response = await deleteIssue(id);
@@ -119,18 +119,17 @@ export const deleteCitizen = createAsyncThunk("/admin/userManagement",
       const adminSlice = createSlice({
         name : "admin",
         initialState,
-        reducers : {
-          logout : (state)=>{
-            state.users = null
-            state.token = null
-            state.error = null
-            localStorage.removeItem("token")
-            localStorage.removeItem("user")
-           
-          },
-          clearError : (state)=>{
-            state.error = null
-          },
+          reducers: {
+    logout: (state) => {
+      state.user = null
+      state.token = null
+      state.error = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+    },
+    clearError: (state) => {
+      state.error = null
+    },
         },
       
         extraReducers : (builder)=>{
@@ -139,6 +138,8 @@ export const deleteCitizen = createAsyncThunk("/admin/userManagement",
            state.loading = true
            state.error = false
           }).addCase(accessingAllUsers.fulfilled, (state,action)=>{
+            console.log("FULFILLED PAYLOAD:", action.payload);
+
             state.loading = false
             state.error = false
             state.users = action.payload.users;
@@ -175,3 +176,8 @@ export const deleteCitizen = createAsyncThunk("/admin/userManagement",
         }
 
       })
+
+
+      // export const {logout, clearError} = adminSlice.actions
+
+      export default adminSlice.reducer

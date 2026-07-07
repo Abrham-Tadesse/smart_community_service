@@ -16,11 +16,7 @@ const AdminDashboard = () => {
     responseRate: 0
   })
 
-  useEffect(() => {
-    dispatch(fetchIssues())
-    loadStats()
-  }, [dispatch])
-
+  
   const loadStats = () => {
     // Get users from localStorage
     const users = JSON.parse(localStorage.getItem('users') || '[]')
@@ -53,7 +49,12 @@ const AdminDashboard = () => {
       responseRate
     })
   }
-
+  
+  useEffect(() => {
+    dispatch(fetchIssues())
+    loadStats()
+  }, [dispatch])
+  
   // Quick actions for admin
   const quickActions = [
     { title: 'Manage Users', icon: '👥', link: '/admin/users', color: 'bg-blue-500' },

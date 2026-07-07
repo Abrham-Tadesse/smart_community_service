@@ -3,20 +3,21 @@ import { useDispatch, useSelector } from 'react-redux'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { toast } from 'react-toastify';
-import { accessingAllUsers } from './adminSlice';
+import { accessingAllUsers, roleChange } from './adminSlice';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([])
   const [filteredUsers, setFilteredUsers] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
-  const [loading, setLoading] = useState(false)
+  const [loadings, setLoadings] = useState(false);
+  const {users,loading} = useSelector((state)=>state.admin);
   const dispatch = useDispatch();
 
 
 
   useEffect(() => {
     // loadUsers()
+    console.log("Dispatching...");
      dispatch(accessingAllUsers());
      
   }, [dispatch])
@@ -25,10 +26,8 @@ const UserManagement = () => {
     filterUsers()
   }, [users, searchTerm, roleFilter])
 
-  const loadUsers = () => {
-    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]')
-    setUsers(storedUsers)
-  }
+
+// console.log("Users from Redux:", users);
 
   const filterUsers = () => {
     let filtered = users
@@ -52,21 +51,17 @@ const UserManagement = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     if (!confirm(`Change this user's role to ${newRole}?`)) return
-    setLoading(true) 
+    setLoadings(true) 
     try {
       // Update in localStorage
-      const updatedUsers = users.map(user => 
-        user.id === userId ? { ...user, role: newRole, updatedAt: new Date().toISOString() } : user
-      )
+      await dispatch(roleChange({userId,role : newRole})).unwrap();
       
-      localStorage.setItem('users', JSON.stringify(updatedUsers))
-      setUsers(updatedUsers)
       
       toast.success('User role updated successfully')
     } catch (error) {
       toast.error('Failed to update user role')
     } finally {
-      setLoading(false)
+      setLoadings(false)
     }
   }
 
@@ -74,7 +69,7 @@ const UserManagement = () => {
     if (action === 'disable' && !confirm('Disable this user account?')) return
     if (action === 'enable' && !confirm('Enable this user account?')) return
     
-    setLoading(true)
+    setLoadings(true)
     
     try {
       const updatedUsers = users.map(user => 
@@ -85,20 +80,18 @@ const UserManagement = () => {
         } : user
       )
       
-      localStorage.setItem('users', JSON.stringify(updatedUsers))
-      setUsers(updatedUsers)
       
       toast.success(`User account ${action === 'disable' ? 'disabled' : 'enabled'}`)
     } catch (error) {
       toast.error('Failed to update user status')
     } finally {
-      setLoading(false)
+      setLoadings(false)
     }
   }
 
   const getRoleBadge = (role) => {
     const roles = {
-      citizen: { label: 'Citizen', color: 'badge-primary' },
+      user: { label: 'User', color: 'badge-primary' },
       officer: { label: 'Officer', color: 'badge-info' },
       admin: { label: 'Admin', color: 'badge-success' }
     }
@@ -138,13 +131,15 @@ const UserManagement = () => {
                 className="input-field"
               >
                 <option value="all">All Roles</option>
-                <option value="citizen">Citizen</option>
+                <option value="user">User</option>
                 <option value="officer">Officer</option>
                 <option value="admin">Admin</option>
               </select>
               
-              <Button onClick={loadUsers} variant="outline">
-                Refresh
+              <Button   variant="outline"
+                        onClick={() => dispatch(accessingAllUsers())}
+                        disabled={loading}>
+                {loading ? "refreshing":"Refresh"}
               </Button>
             </div>
           </div>
@@ -153,15 +148,15 @@ const UserManagement = () => {
         {/* Users Table */}
         <div className="card">
           <div className="card-header">
-            <h3>Users ({filteredUsers.length})</h3>
+            <h3>Users ({filteredUsers?.length})</h3>
           </div>
           <div className="card-body">
-            {loading ? (
+            {loadings ? (
               <div className="text-center py-8">
-                <div className="loading-spinner"></div>
-                <p className="mt-4 text-gray-600">Loading users...</p>
+                <div className="loadings-spinner"></div>
+                <p className="mt-4 text-gray-600">Loadings users...</p>
               </div>
-            ) : filteredUsers.length > 0 ? (
+            ) : filteredUsers?.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="table">
                   <thead>
@@ -174,8 +169,8 @@ const UserManagement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id}>
+                    {filteredUsers?.map((user) => (
+                      <tr key={user._id}>
                         <td>
                           <div className="flex items-center gap-3">
                             <div className="user-avatar">
@@ -192,11 +187,11 @@ const UserManagement = () => {
                             {getRoleBadge(user.role)}
                             <select
                               value={user.role}
-                              onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                              onChange={(e) => handleRoleChange(user._id, e.target.value)}
                               className="text-sm border rounded px-2 py-1"
-                              disabled={loading}
+                              disabled={loadings}
                             >
-                              <option value="citizen">Citizen</option>
+                              <option value="user">User</option>
                               <option value="officer">Officer</option>
                               <option value="admin">Admin</option>
                             </select>
@@ -215,8 +210,8 @@ const UserManagement = () => {
                             {user.status === 'disabled' ? (
                               <Button
                                 size="small"
-                                onClick={() => handleUserStatus(user.id, 'enable')}
-                                disabled={loading}
+                                onClick={() => handleUserStatus(user._id, 'enable')}
+                                disabled={loadings}
                               >
                                 Enable
                               </Button>
@@ -224,8 +219,8 @@ const UserManagement = () => {
                               <Button
                                 variant="danger"
                                 size="small"
-                                onClick={() => handleUserStatus(user.id, 'disable')}
-                                disabled={loading}
+                                onClick={() => handleUserStatus(user._id, 'disable')}
+                                disabled={loadings}
                               >
                                 Disable
                               </Button>
@@ -256,16 +251,16 @@ const UserManagement = () => {
           <div className="card">
             <div className="card-body text-center">
               <div className="text-3xl font-bold text-blue-600">
-                {users.filter(u => u.role === 'citizen').length}
+                {users?.filter(u => u.role === 'user').length}
               </div>
-              <div className="text-gray-600">Citizens</div>
+              <div className="text-gray-600">Users</div>
             </div>
           </div>
           
           <div className="card">
             <div className="card-body text-center">
               <div className="text-3xl font-bold text-green-600">
-                {users.filter(u => u.role === 'officer').length}
+                {users?.filter(u => u.role === 'officer').length}
               </div>
               <div className="text-gray-600">Officers</div>
             </div>
@@ -274,7 +269,7 @@ const UserManagement = () => {
           <div className="card">
             <div className="card-body text-center">
               <div className="text-3xl font-bold text-purple-600">
-                {users.filter(u => u.role === 'admin').length}
+                {users?.filter(u => u.role === 'admin').length}
               </div>
               <div className="text-gray-600">Admins</div>
             </div>
