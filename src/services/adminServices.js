@@ -9,8 +9,8 @@ export const allUsers = ()=>{
     return API.get(endpoints.allUser);
 }
 
-export const role = (userId,role) =>{
-    return API.patch(endpoints.changeRole(userId),{role});
+export const role = (userId,newRole) =>{
+    return API.patch(endpoints.changeRole(userId),{newRole});
 }
 
 export const deleteUsers = (userId)=>{

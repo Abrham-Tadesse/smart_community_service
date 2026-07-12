@@ -53,13 +53,15 @@ const UserManagement = () => {
     if (!confirm(`Change this user's role to ${newRole}?`)) return
     setLoadings(true) 
     try {
-      // Update in localStorage
-      await dispatch(roleChange({userId,role : newRole})).unwrap();
-      
+      await dispatch(roleChange(
+        {id : userId, 
+        newRole : newRole
+        })).unwrap();
       
       toast.success('User role updated successfully')
     } catch (error) {
       toast.error('Failed to update user role')
+      console.log(error.message);
     } finally {
       setLoadings(false)
     }
@@ -73,7 +75,7 @@ const UserManagement = () => {
     
     try {
       const updatedUsers = users.map(user => 
-        user.id === userId ? { 
+        user._id === userId ? { 
           ...user, 
           status: action === 'disable' ? 'disabled' : 'active',
           updatedAt: new Date().toISOString() 
@@ -192,7 +194,6 @@ const UserManagement = () => {
                               disabled={loadings}
                             >
                               <option value="user">User</option>
-                              <option value="officer">Officer</option>
                               <option value="admin">Admin</option>
                             </select>
                           </div>
@@ -257,14 +258,14 @@ const UserManagement = () => {
             </div>
           </div>
           
-          <div className="card">
+          {/* <div className="card">
             <div className="card-body text-center">
               <div className="text-3xl font-bold text-green-600">
                 {users?.filter(u => u.role === 'officer').length}
               </div>
               <div className="text-gray-600">Officers</div>
             </div>
-          </div>
+          </div> */}
           
           <div className="card">
             <div className="card-body text-center">

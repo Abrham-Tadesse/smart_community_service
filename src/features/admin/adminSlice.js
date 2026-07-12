@@ -36,26 +36,29 @@ export const adminDashboard = createAsyncThunk("/admin/dashboard",
 )
 
 export const accessingAllUsers = createAsyncThunk("/admin/allusers", 
-    async(_, {rejecWithValue})=>{
+    async(_, {rejectWithValue})=>{
        
        try { 
         const response = await allUsers();
         return response.data;
         
         }catch(e){
-            rejecWithValue(e.response?.data?.message);
+            rejectWithValue(e.response?.data?.message);
         }
 
 })
 
 export const roleChange = createAsyncThunk("/admin/roleChange",
-   async({id,newRole}, {rejecWithValue})=>{
+   async({id,newRole}, {rejectWithValue})=>{
     try {
+      
+      console.log(id);
       const response = await role(id,newRole);
       return response.data;
 
     } catch (e) {
-      return rejecWithValue(e.response?.data?.message);
+      console.log(e.response?.data?.message);
+      return rejectWithValue(e.response?.data?.message);
     }
 
 })
@@ -63,7 +66,6 @@ export const roleChange = createAsyncThunk("/admin/roleChange",
 export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
   async(id, {rejectWithValue})=>{
    try {
-
        const response = await deleteUsers(id);
        return response.data;
 
@@ -147,9 +149,14 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
           }).addCase(accessingAllUsers.rejected , (state,action)=>{
             state.loading = false
             state.error = action.payloaad
-          }).addCase(roleChange.fulfilled, (state,action)=>{
-            state.users = action.payload.users
-          }).addCase(deleteCitizen.fulfilled, (state,action)=>{
+          }).addCase(roleChange.fulfilled, (state, action) => {
+            const updatedUser = action.payload.user;
+            state.users = state.users.map(user =>
+                user._id === updatedUser._id
+                    ? updatedUser
+                    : user
+            )
+        }).addCase(deleteCitizen.fulfilled, (state,action)=>{
             state.users = action.payload
           }).addCase(accessingAllIssues.pending, (state)=>{
             state.loading = true
