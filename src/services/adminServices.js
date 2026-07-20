@@ -13,8 +13,8 @@ export const role = (userId,newRole) =>{
     return API.patch(endpoints.changeRole(userId),{newRole});
 }
 
-export const deleteUsers = (userId)=>{
-    return API.delete(`${endpoints.allUser}/${userId}`);
+export const changeUserStatus = (userId,newStatus)=>{
+    return API.patch(endpoints.changeUsersStatus(userId),{newStatus});
 }
 
 // ISSUE CASE 

@@ -89,7 +89,7 @@ const Navbar = () => {
 
           {user ? (
             <div className="user-dropdown" ref={dropdownRef}> {/* ADD REF HERE */}
-              <button 
+              <div 
                 className="user-dropdown-btn"
                 onClick={toggleDropdown} // USE onClick INSTEAD OF hover
                 aria-expanded={isDropdownOpen}
@@ -160,7 +160,7 @@ const Navbar = () => {
                 <span className={`dropdown-arrow ${isDropdownOpen ? 'rotate-180' : ''}`}>
                   ▼
                 </span>
-              </button>
+              </div>
               
               {/* Show dropdown based on state, not CSS hover */}
               {isDropdownOpen && (

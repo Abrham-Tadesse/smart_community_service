@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import API from '../../services/api';
-import { dashboard,allUsers,role,deleteUsers, allIssues,status,deleteIssue } from '../../services/adminServices';
-import { clearError, logout } from '../auth/authSlice';
+import { dashboard,allUsers,role,changeUserStatus, allIssues,status,deleteIssue } from '../../services/adminServices';
+// import { clearError, logout } from '../auth/authSlice';
 
 
 const initialState = {
@@ -52,21 +52,23 @@ export const roleChange = createAsyncThunk("/admin/roleChange",
    async({id,newRole}, {rejectWithValue})=>{
     try {
       
-      console.log(id);
+      // console.log(id);
       const response = await role(id,newRole);
       return response.data;
 
     } catch (e) {
-      console.log(e.response?.data?.message);
+      // console.log(e.response?.data?.message);
       return rejectWithValue(e.response?.data?.message);
     }
 
 })
 
+
+// CHANGE THE STATUS OF THE USER IN THE SYSTEM 
 export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
-  async(id, {rejectWithValue})=>{
+  async({id,newStatus}, {rejectWithValue})=>{
    try {
-       const response = await deleteUsers(id);
+       const response = await changeUserStatus(id,newStatus);
        return response.data;
 
    } catch (e) {
@@ -75,6 +77,8 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
 
   }) 
 
+  // THE ISSUE CASE 
+  
   export const accessingAllIssues = createAsyncThunk("/admin/allIssue", 
      async(_, {rejectWithValue})=>{
         try {
@@ -157,7 +161,12 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
                     : user
             )
         }).addCase(deleteCitizen.fulfilled, (state,action)=>{
-            state.users = action.payload
+            const updatedUser = action.payload.user;
+            state.users = state.users.map(user =>
+                user._id === updatedUser._id
+                    ? updatedUser
+                    : user
+            )
           }).addCase(accessingAllIssues.pending, (state)=>{
             state.loading = true
             state.error = false

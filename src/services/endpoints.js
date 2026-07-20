@@ -17,6 +17,7 @@ export const endpoints = {
   dashboard : "/admin/dashboard",
   allUser : "/admin/users", // also for deleting
   changeRole : (userID) => `admin/users/${userID}/role`,
+  changeUsersStatus : (userID)=>`admin/users/${userID}`,
   //deleteUser  :"/admin/users",
   allIssue : "/admin/issues",  //For deleting also 
   changeStatus : (issueId) =>`admin/issues/${issueId}/status`,

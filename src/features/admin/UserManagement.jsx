@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { toast } from 'react-toastify';
-import { accessingAllUsers, roleChange } from './adminSlice';
+import { accessingAllUsers, deleteCitizen, roleChange } from './adminSlice';
 
 const UserManagement = () => {
   const [filteredUsers, setFilteredUsers] = useState([])
@@ -67,25 +67,29 @@ const UserManagement = () => {
     }
   }
 
-  const handleUserStatus = async (userId, action) => {
-    if (action === 'disable' && !confirm('Disable this user account?')) return
-    if (action === 'enable' && !confirm('Enable this user account?')) return
-    
+  const handleUserStatus = async (userId, newStatus) => {
+    if (newStatus === 'disable' && !confirm('Disable this user account?')) return
+    if (newStatus === 'enable' && !confirm('Enable this user account?')) return
     setLoadings(true)
-    
     try {
-      const updatedUsers = users.map(user => 
-        user._id === userId ? { 
-          ...user, 
-          status: action === 'disable' ? 'disabled' : 'active',
-          updatedAt: new Date().toISOString() 
-        } : user
-      )
-      
-      
-      toast.success(`User account ${action === 'disable' ? 'disabled' : 'enabled'}`)
+          // const updatedUsers = users.map(user => 
+          //   user._id === userId ? { 
+          //     ...user, 
+          //     status: action === 'disable' ? 'disabled' : 'active',
+          //     updatedAt: new Date().toISOString() 
+          //   } : user
+          // )
+
+       await dispatch(deleteCitizen({
+        id: userId,
+        newStatus : newStatus
+       })).unwrap();
+
+      toast.success(`User account ${newStatus === 'disable' ? 'disabled' : 'enabled'}`)
     } catch (error) {
+      console.log(error);
       toast.error('Failed to update user status')
+
     } finally {
       setLoadings(false)
     }
@@ -211,7 +215,7 @@ const UserManagement = () => {
                             {user.status === 'disabled' ? (
                               <Button
                                 size="small"
-                                onClick={() => handleUserStatus(user._id, 'enable')}
+                                onClick={() => handleUserStatus(user._id, 'active')}
                                 disabled={loadings}
                               >
                                 Enable
@@ -220,7 +224,7 @@ const UserManagement = () => {
                               <Button
                                 variant="danger"
                                 size="small"
-                                onClick={() => handleUserStatus(user._id, 'disable')}
+                                onClick={() => handleUserStatus(user._id, 'disabled')}
                                 disabled={loadings}
                               >
                                 Disable
