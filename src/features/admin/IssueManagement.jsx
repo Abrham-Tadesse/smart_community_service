@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchIssues, updateIssue } from '../issues/issueSlice'
 import { Link } from 'react-router-dom'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { toast } from 'react-toastify'
+import { accessingAllIssues } from './adminSlice'
+
+
 
 const IssueManagement = () => {
   const dispatch = useDispatch()
-  const { issues, loading } = useSelector((state) => state.issues)
+  const { issues, loading } = useSelector((state) => state.issues);
+  
   const [filteredIssues, setFilteredIssues] = useState([])
   const [filters, setFilters] = useState({
     search: '',
@@ -20,12 +23,10 @@ const IssueManagement = () => {
   const [bulkAction, setBulkAction] = useState('')
 
   useEffect(() => {
-    dispatch(fetchIssues())
+    dispatch(accessingAllIssues());
   }, [dispatch])
+  
 
-  useEffect(() => {
-    filterIssues()
-  }, [issues, filters])
 
   const filterIssues = () => {
     let filtered = [...issues]
@@ -57,9 +58,14 @@ const IssueManagement = () => {
         return true
       })
     }
-
+    
     setFilteredIssues(filtered)
   }
+
+    useEffect(() => {
+      filterIssues();
+    }, [issues, filters])
+
 
   const handleFilterChange = (name, value) => {
     setFilters(prev => ({
@@ -263,17 +269,17 @@ const IssueManagement = () => {
                   </thead>
                   <tbody>
                     {filteredIssues.map((issue) => (
-                      <tr key={issue.id}>
+                      <tr key={issue._id}>
                         <td>
                           <input
                             type="checkbox"
-                            checked={selectedIssues.includes(String(issue.id))}
-                            onChange={() => handleSelectIssue(issue.id)}
+                            checked={selectedIssues.includes(String(issue._id))}
+                            onChange={() => handleSelectIssue(issue._id)}
                           />
                         </td>
                         <td>
                           <div>
-                            <Link to={`/issues/${issue.id}`} className="font-medium text-gray-900 hover:text-primary-600">
+                            <Link to={`/issues/${issue._id}`} className="font-medium text-gray-900 hover:text-primary-600">
                               {issue.title}
                             </Link>
                             <div className="text-sm text-gray-500">{issue.location}</div>
@@ -291,15 +297,15 @@ const IssueManagement = () => {
                         <td>
                           <div className="text-sm">
                             <div>{formatDate(issue.createdAt)}</div>
-                            <div className="text-gray-500">by {issue.reportedBy?.name || 'Anonymous'}</div>
+                            <div className="text-gray-500">by {issue.creator?.name || 'Anonymous'}</div>
                           </div>
                         </td>
                         <td>
                           <div className="flex gap-2">
-                            <Link to={`/issues/${issue.id}`} className="btn btn-outline btn-small">
+                            <Link to={`/issues/${issue._id}`} className="btn btn-outline btn-small">
                               View
                             </Link>
-                            <Link to={`/admin/issues/${issue.id}/edit`} className="btn btn-primary btn-small">
+                            <Link to={`/admin/issues/${issue._id}/edit`} className="btn btn-primary btn-small">
                               Edit
                             </Link>
                           </div>

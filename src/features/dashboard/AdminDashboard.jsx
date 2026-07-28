@@ -1,58 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchIssues } from '../issues/issueSlice'
+import { accessingAllUsers, adminDashboard,accessingAllIssues } from '../admin/adminSlice'
 import { Link } from 'react-router-dom'
 
 const AdminDashboard = () => {
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
-  const { issues } = useSelector((state) => state.issues)
-  const [stats, setStats] = useState({
-    totalIssues: 0,
-    pendingIssues: 0,
-    resolvedIssues: 0,
-    totalUsers: 0,
-    activeUsers: 0,
-    responseRate: 0
-  })
-
+  const {dashboard,issues,loading} = useSelector((state) => state.admin);
   
-  const loadStats = () => {
-    // Get users from localStorage
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-    const issues = JSON.parse(localStorage.getItem('issues') || '[]')
-    
-    // Calculate stats
-    const totalIssues = issues.length
-    const pendingIssues = issues.filter(i => i.status !== 'resolved').length
-    const resolvedIssues = issues.filter(i => i.status === 'resolved').length
-    const totalUsers = users.length
-    const activeUsers = users.filter(u => u.lastLogin).length // In real app, track last login
-    
-    // Calculate response rate (issues resolved within 7 days)
-    const recentResolved = issues.filter(i => {
-      if (i.status !== 'resolved') return false
-      const resolvedDate = new Date(i.updatedAt || i.createdAt)
-      const now = new Date()
-      const diffDays = (now - resolvedDate) / (1000 * 60 * 60 * 24)
-      return diffDays <= 7
-    }).length
-    
-    const responseRate = totalIssues > 0 ? Math.round((recentResolved / totalIssues) * 100) : 0
-    
-    setStats({
-      totalIssues,
-      pendingIssues,
-      resolvedIssues,
-      totalUsers,
-      activeUsers,
-      responseRate
-    })
-  }
   
   useEffect(() => {
-    dispatch(fetchIssues())
-    loadStats()
+    dispatch(adminDashboard());
+    dispatch(accessingAllIssues());
   }, [dispatch])
   
   // Quick actions for admin
@@ -85,17 +44,17 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600">Total Issues</p>
-                <h3 className="text-2xl font-bold text-gray-900">{stats.totalIssues}</h3>
+                <h3 className="text-2xl font-bold text-gray-900">{dashboard.totalIssues}</h3>
               </div>
               <div className="text-3xl text-blue-500">📋</div>
             </div>
             <div className="mt-4">
               <div className="flex justify-between text-sm items-start">
-                <span>Pending: {stats.pendingIssues}</span>
+                <span>In Progress: {dashboard.inProgress}</span>
 
                 <div className="flex flex-col items-end">
-                  <span>Resolved: {stats.resolvedIssues}</span>
-                  <span className="text-sm text-gray-500 mt-1">Response Rate: {stats.responseRate}%</span>
+                  <span>Resolved: {dashboard.resolved}</span>
+                  <span className="text-sm text-gray-500 mt-1">Response Rate: {dashboard.responseRate}%</span>
                 </div>
                </div>
             </div>
@@ -105,14 +64,14 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600">Total Users</p>
-                <h3 className="text-2xl font-bold text-gray-900">{stats.totalUsers}</h3>
+                <h3 className="text-2xl font-bold text-gray-900">{dashboard.totalUsers}</h3>
               </div>
               <div className="text-3xl text-green-500">👥</div>
             </div>
             <div className="mt-4">
               <div className="flex justify-between text-sm">
-                <span>Active: {stats.activeUsers}</span>
-                {/* <span>Response Rate: {stats.responseRate}%</span> */}
+                <span>Active: {dashboard.activeUsers}</span>
+                {/* <span>Response Rate: {responseRate}%</span> */}
               </div>
             </div>
           </div>

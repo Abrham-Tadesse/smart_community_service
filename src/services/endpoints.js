@@ -22,6 +22,6 @@ export const endpoints = {
   allIssue : "/admin/issues",  //For deleting also 
   changeStatus : (issueId) =>`admin/issues/${issueId}/status`,
 
-
+ 
   
 }

@@ -26,6 +26,7 @@ export const adminDashboard = createAsyncThunk("/admin/dashboard",
     try {
 
       const response = await dashboard();
+      console.log("Dashboard response:", response.data);
       return response.data;
 
     } catch (e) {
@@ -84,7 +85,9 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
         try {
 
            const response = await allIssues();
+           console.log("THUNK:", response.data);
            return response.data;
+
 
         } catch (e) {
           return rejectWithValue(e.response?.data?.message);
@@ -171,8 +174,10 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
             state.loading = true
             state.error = false
           }).addCase(accessingAllIssues.fulfilled, (state,action)=>{
+            console.log("REDUCER:", action.payload);
+
             state.loading = false
-            state.error = false
+            state.error = null
             state.issues = action.payload.issues
           }).addCase(accessingAllIssues.rejected, (state,action)=>{
             state.loading = false
@@ -185,7 +190,8 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
             state.loading = true
             state.error = false
           }).addCase(adminDashboard.fulfilled, (state,action)=>{
-             state.dashboard = action.payload.dashboard
+            state.loading = false;
+             state.dashboard = action.payload;
           })
 
 
