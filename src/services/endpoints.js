@@ -21,7 +21,7 @@ export const endpoints = {
   //deleteUser  :"/admin/users",
   allIssue : "/admin/issues",  //For deleting also 
   changeStatus : (issueId) =>`admin/issues/${issueId}/status`,
-
+  recentActivities : "admin/recentActivities",
  
   
 }

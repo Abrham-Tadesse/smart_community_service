@@ -80,13 +80,15 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600">Issues This Week</p>
-                <h3 className="text-2xl font-bold text-gray-900">24</h3>
+                <h3 className="text-2xl font-bold text-gray-900">{dashboard.issuesThisWeek}</h3>
               </div>
               <div className="text-3xl text-purple-500">📈</div>
             </div>
             <div className="mt-4">
               <div className="text-sm text-gray-600">
-                <span className="text-green-600">↑ 12%</span> from last week
+                <span className="text-green-600">{dashboard.percentage > 0 ? "↑" : "↓"}{" "}
+                  {Math.abs(dashboard.percentage).toFixed(1)}%{" "}
+                  </span> from last week
               </div>
             </div>
           </div>
@@ -95,13 +97,13 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600">Avg. Resolution Time</p>
-                <h3 className="text-2xl font-bold text-gray-900">3.2 days</h3>
+                <h3 className="text-2xl font-bold text-gray-900">{dashboard.averageResolutionDays?.toFixed(1)} days</h3>
               </div>
               <div className="text-3xl text-yellow-500">⏱️</div>
             </div>
             <div className="mt-4">
               <div className="text-sm text-gray-600">
-                Target: <span className="text-green-600">2.5 days</span>
+                Target: <span className="text-green-600">{dashboard.targetResolutionDays} days</span>
               </div>
             </div>
           </div>
