@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import API from '../../services/api';
-import { dashboard,allUsers,role,changeUserStatus, allIssues,status,deleteIssue } from '../../services/adminServices';
+import { dashboard,allUsers,role,changeUserStatus, allIssues,status,deleteIssue, readActivities } from '../../services/adminServices';
 // import { clearError, logout } from '../auth/authSlice';
 
 
 const initialState = {
   users: [],
   issues: [],
+  activities : [],
 
   dashboard: {
     totalUsers: 0,
@@ -121,6 +122,18 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
 
       })
 
+    export const readRecentActivities = createAsyncThunk("/admin/readActivities",
+      async(_, {rejectWithValue})=>{
+           try {
+            const response = await readActivities();
+            return response.data;
+           } catch (e) {
+            return rejectWithValue(e.response?.data?.message)
+            
+           }
+      })
+    
+
 
 
 
@@ -147,7 +160,7 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
            state.loading = true
            state.error = false
           }).addCase(accessingAllUsers.fulfilled, (state,action)=>{
-            console.log("FULFILLED PAYLOAD:", action.payload);
+            // console.log("FULFILLED PAYLOAD:", action.payload);
 
             state.loading = false
             state.error = false
@@ -192,9 +205,19 @@ export const deleteCitizen = createAsyncThunk("/admin/deleteUser",
           }).addCase(adminDashboard.fulfilled, (state,action)=>{
             state.loading = false;
              state.dashboard = action.payload;
+          }).addCase(readRecentActivities.pending, (state) => {
+              state.loading = true;
+              state.error = null;
+          }).addCase(readRecentActivities.fulfilled, (state, action) => {
+              state.loading = false;
+              state.activities = action.payload.activities;
+          }).addCase(readRecentActivities.rejected, (state, action) => {
+              state.loading = false;
+              state.error = action.payload;
           })
 
 
+          
         }
 
       })

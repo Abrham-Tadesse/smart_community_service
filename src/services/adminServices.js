@@ -30,3 +30,7 @@ export const status = (issueId)=>{
 export const deleteIssue = (issueId)=>{
     return API.delete(`${endpoints.allIssue}/${issueId}`);
 }
+
+export const readActivities = ()=>{
+    return API.get(endpoints.recentActivities);
+}

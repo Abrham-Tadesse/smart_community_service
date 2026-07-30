@@ -1,19 +1,41 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { accessingAllUsers, adminDashboard,accessingAllIssues } from '../admin/adminSlice'
+import { accessingAllUsers, adminDashboard,accessingAllIssues, readRecentActivities } from '../admin/adminSlice'
 import { Link } from 'react-router-dom'
 
 const AdminDashboard = () => {
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
-  const {dashboard,issues,loading} = useSelector((state) => state.admin);
-  
+  const {dashboard,issues,activities,loading} = useSelector((state) => state.admin);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+        useEffect(() => {
+          const interval = setInterval(() => {
+            setCurrentTime(Date.now());
+          }, 60000); // update every minute
+
+          return () => clearInterval(interval);
+        }, []);
   
   useEffect(() => {
     dispatch(adminDashboard());
     dispatch(accessingAllIssues());
+    dispatch(readRecentActivities());
   }, [dispatch])
   
+const timeAgo = (date, now) => {
+  const seconds = Math.floor((now - new Date(date).getTime()) / 1000);
+  if (seconds < 60) return `${seconds} sec ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hr ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day ago`;
+}
+
+console.log(activities)
+
   // Quick actions for admin
   const quickActions = [
     { title: 'Manage Users', icon: '👥', link: '/admin/users', color: 'bg-blue-500' },
@@ -23,12 +45,6 @@ const AdminDashboard = () => {
   ]
 
   // Recent activity
-  const recentActivity = [
-    { type: 'issue', text: 'New water issue reported in Bole', time: '10 min ago' },
-    { type: 'user', text: 'New user registered: John Doe', time: '25 min ago' },
-    { type: 'resolve', text: 'Street light issue resolved', time: '1 hour ago' },
-    { type: 'comment', text: '5 new comments on road repair issue', time: '2 hours ago' }
-  ]
 
   return (
     <div className="page-container">
@@ -139,7 +155,7 @@ const AdminDashboard = () => {
             </div>
             <div className="card-body">
               {issues.slice(0, 5).map((issue) => (
-                <div key={issue.id} className="border-b border-gray-200 pb-3 mb-3 last:border-0 last:mb-0">
+                <div key={issue._id} className="border-b border-gray-200 pb-3 mb-3 last:border-0 last:mb-0">
                   <div className="flex justify-between items-start">
                     <div>
                       <Link to={`/issues/${issue.id}`} className="font-medium text-gray-900 hover:text-primary-600">
@@ -170,8 +186,8 @@ const AdminDashboard = () => {
               <h3>Recent Activity</h3>
             </div>
             <div className="card-body">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start gap-3 border-b border-gray-200 pb-3 mb-3 last:border-0 last:mb-0">
+              {activities.map((activity) => (
+                <div key={activity._id} className="flex items-start gap-3 border-b border-gray-200 pb-3 mb-3 last:border-0 last:mb-0">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                     activity.type === 'issue' ? 'bg-blue-100 text-blue-600' :
                     activity.type === 'user' ? 'bg-green-100 text-green-600' :
@@ -183,8 +199,8 @@ const AdminDashboard = () => {
                      activity.type === 'resolve' ? '✅' : '💬'}
                   </div>
                   <div className="flex-1">
-                    <p className="text-gray-900">{activity.text}</p>
-                    <p className="text-sm text-gray-500">{activity.time}</p>
+                    <p className="text-gray-900">{activity.message}</p>
+                    <p className="text-sm text-gray-500">{timeAgo(activity.createdAt, currentTime)}</p>
                   </div>
                 </div>
               ))}
