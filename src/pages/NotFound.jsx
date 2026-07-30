@@ -1,6 +1,9 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+
 
 const NotFound = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="page-container">
       <div className="container text-center">
@@ -15,7 +18,7 @@ const NotFound = () => {
             Go to Homepage
           </Link>
           <div className="text-gray-600">
-            <Link to="/issues" className="mr-4">View Issues</Link>
+            <button onClick={() => navigate(-1)} className="mr-4 btn-primary">View Issues</button>
             <Link to="/about">About Us</Link>
           </div>
         </div>

@@ -34,7 +34,6 @@ const timeAgo = (date, now) => {
   return `${days} day ago`;
 }
 
-console.log(activities)
 
   // Quick actions for admin
   const quickActions = [

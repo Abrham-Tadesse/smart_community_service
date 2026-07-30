@@ -51,6 +51,15 @@ const IssueDetails = () => {
     });
   };
 
+const handleBack = ()=>{
+  if(user?.role === "admin"){
+    navigate("/admin/issues");
+  }
+  else {
+    navigate("/issues");
+  }
+}
+
 const handleCommentSubmit = async() => {
       if(!commentText.trim()){
         alert ("Comment can`t be empty");
@@ -102,7 +111,7 @@ const handleCommentSubmit = async() => {
           <p className="mb-6 text-gray-600">
             The issue you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => navigate("/issues")}>Back to Issues</Button>
+          <Button onClick={handleBack}>Back to Issues</Button>
         </div>
       </div>
     );
@@ -115,7 +124,7 @@ const handleCommentSubmit = async() => {
       <div className="container">
         <Button
           variant="outline"
-          onClick={() => navigate("/issues")}
+          onClick={() => navigate(-1)} // HANDLE THE BACK BUTTON USING THE BROWSER HISTORY
           className="mb-6"
         >
           ← Back to Issues

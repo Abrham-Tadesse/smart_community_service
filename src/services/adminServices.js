@@ -23,8 +23,9 @@ export const allIssues = ()=>{
     return API.get(endpoints.allIssue);
 }
 
-export const status = (issueId)=>{
-     return API.patch(endpoints.changeStatus(issueId));
+export const status = (issueId,newStatus)=>{
+    console.log(issueId);
+     return API.patch(endpoints.changeStatus(issueId),{newStatus});
 }
 
 export const deleteIssue = (issueId)=>{

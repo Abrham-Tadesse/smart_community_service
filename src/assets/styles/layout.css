@@ -84,7 +84,7 @@
 .ml-2 { margin-left: var(--spacing-sm); }
 .ml-4 { margin-left: var(--spacing-md); }
 .mr-2 { margin-right: var(--spacing-sm); }
-.mr-4 { margin-right: var(--spacing-md); }
+.mr-4 { margin-right: var(--spacing-md);}
 
 .p-2 { padding: var(--spacing-sm); }
 .p-4 { padding: var(--spacing-md); }

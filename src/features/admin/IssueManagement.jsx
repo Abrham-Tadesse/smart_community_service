@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { toast } from 'react-toastify'
-import { accessingAllIssues } from './adminSlice'
+import { accessingAllIssues, changeStatus } from './adminSlice'
 
 
 
 const IssueManagement = () => {
   const dispatch = useDispatch()
-  const { issues, loading } = useSelector((state) => state.issues);
+  const { issues, loading } = useSelector((state) => state.admin);
   
   const [filteredIssues, setFilteredIssues] = useState([])
   const [filters, setFilters] = useState({
@@ -87,16 +87,18 @@ const IssueManagement = () => {
     if (selectedIssues.length === filteredIssues.length) {
       setSelectedIssues([])
     } else {
-      setSelectedIssues(filteredIssues.map(issue => String(issue.id)))
+      setSelectedIssues(filteredIssues.map(issue => String(issue._id)))
     }
   }
 
   const handleBulkAction = async () => {
+    console.log(bulkAction);
+    console.log(selectedIssues);
     if (!bulkAction) {
       toast.error('Please select an action')
       return
     }
-
+  
     if (selectedIssues.length === 0) {
       toast.error('Please select issues to perform action on')
       return
@@ -104,16 +106,19 @@ const IssueManagement = () => {
 
     try {
       for (const issueId of selectedIssues) {
-        await dispatch(updateIssue({
+        console.log(issueId);
+        await dispatch(changeStatus({
           id: issueId,
-          data: { status: bulkAction }
+          newStatus: bulkAction, 
         })).unwrap()
       }
+      
 
       toast.success(`Updated ${selectedIssues.length} issue(s)`)
       setSelectedIssues([])
       setBulkAction('')
     } catch (error) {
+      console.log(error)
       toast.error('Failed to perform bulk action')
     }
   }
@@ -305,9 +310,9 @@ const IssueManagement = () => {
                             <Link to={`/issues/${issue._id}`} className="btn btn-outline btn-small">
                               View
                             </Link>
-                            <Link to={`/admin/issues/${issue._id}/edit`} className="btn btn-primary btn-small">
+                            {/* <Link to={`/admin/issues/${issue._id}/edit`} className="btn btn-primary btn-small">
                               Edit
-                            </Link>
+                            </Link> */}
                           </div>
                         </td>
                       </tr>
@@ -341,7 +346,7 @@ const IssueManagement = () => {
           <div className="card">
             <div className="card-body text-center">
               <div className="text-3xl font-bold text-yellow-600">
-                {issues.filter(i => i.status === 'submitted').length}
+                {issues?.filter(i => i.status === 'submitted').length}
               </div>
               <div className="text-gray-600">Pending</div>
             </div>
@@ -350,7 +355,7 @@ const IssueManagement = () => {
           <div className="card">
             <div className="card-body text-center">
               <div className="text-3xl font-bold text-green-600">
-                {issues.filter(i => i.status === 'resolved').length}
+                {issues?.filter(i => i.status === 'resolved').length}
               </div>
               <div className="text-gray-600">Resolved</div>
             </div>
@@ -359,7 +364,7 @@ const IssueManagement = () => {
           <div className="card">
             <div className="card-body text-center">
               <div className="text-3xl font-bold text-purple-600">
-                {issues.filter(i => i.status === 'in_progress').length}
+                {issues?.filter(i => i.status === 'in_progress').length}
               </div>
               <div className="text-gray-600">In Progress</div>
             </div>
