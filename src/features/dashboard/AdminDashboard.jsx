@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { accessingAllUsers, adminDashboard,accessingAllIssues, readRecentActivities } from '../admin/adminSlice'
+import { adminDashboard,accessingAllIssues, readRecentActivities } from '../admin/adminSlice'
 import { Link } from 'react-router-dom'
 
 const AdminDashboard = () => {
   const dispatch = useDispatch()
   const { user } = useSelector((state) => state.auth)
-  const {dashboard,issues,activities,loading} = useSelector((state) => state.admin);
+  const {dashboard,issues,activities} = useSelector((state) => state.admin);
   const [currentTime, setCurrentTime] = useState(Date.now());
 
         useEffect(() => {
