@@ -92,8 +92,8 @@ const IssueManagement = () => {
   }
 
   const handleBulkAction = async () => {
-    console.log(bulkAction);
-    console.log(selectedIssues);
+    // console.log(bulkAction);
+    // console.log(selectedIssues);
     if (!bulkAction) {
       toast.error('Please select an action')
       return

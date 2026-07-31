@@ -1,36 +1,26 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { accessingAllIssues,adminDashboard } from './adminSlice';
+import { accessingAllUsers } from './adminSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Analytics = () => {
-  const [stats, setStats] = useState({
-    totalIssues: 0,
-    resolvedIssues: 0,
-    pendingIssues: 0,
-    responseRate: 0,
-    totalUsers: 0
-  })
+const dispatch = useDispatch();
+
+const {dashboard,users} = useSelector((state)=>state.admin);
+const activeUsers = (users)=>{
+  let totalactives = 0;
+     totalactives = users.map(user=>{
+      user.status==="active"? totalactives+=1 : totalactives;
+     });
+
+     return totalactives;
+}
+
 
   useEffect(() => {
-    const issues = JSON.parse(localStorage.getItem('issues') || '[]')
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-
-    const totalIssues = issues.length
-    const resolvedIssues = issues.filter(i => i.status === 'resolved').length
-    const pendingIssues = issues.filter(i => i.status !== 'resolved').length
-    const totalUsers = users.length
-
-    const recentResolved = issues.filter(i => {
-      if (i.status !== 'resolved') return false
-      const resolvedDate = new Date(i.updatedAt || i.createdAt)
-      const now = new Date()
-      const diffDays = (now - resolvedDate) / (1000 * 60 * 60 * 24)
-      return diffDays <= 7
-    }).length
-
-    const responseRate = totalIssues > 0 ? Math.round((recentResolved / totalIssues) * 100) : 0
-
-    setStats({ totalIssues, resolvedIssues, pendingIssues, responseRate, totalUsers })
-  }, [])
+    dispatch(adminDashboard());
+   }, [])
 
   return (
     <div className="page-container">
@@ -43,20 +33,20 @@ const Analytics = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="dashboard-card">
             <p className="text-gray-600">Total Issues</p>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.totalIssues}</h3>
-            <div className="text-sm text-gray-500 mt-2">Resolved: {stats.resolvedIssues}</div>
-            <div className="text-sm text-gray-500">Response Rate: {stats.responseRate}%</div>
+            <h3 className="text-2xl font-bold text-gray-900">{dashboard.totalIssues}</h3>
+            <div className="text-sm text-gray-500 mt-2">Resolved: {dashboard.resolved}</div>
+            <div className="text-sm text-gray-500">Response Rate: {dashboard.responseRate}%</div>
           </div>
 
           <div className="dashboard-card">
             <p className="text-gray-600">Total Users</p>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.totalUsers}</h3>
-            <div className="text-sm text-gray-500 mt-2">Active: (placeholder)</div>
+            <h3 className="text-2xl font-bold text-gray-900">{dashboard.totalUsers}</h3>
+            <div className="text-sm text-gray-500 mt-2">Active: {dashboard.activeUsers}</div>
           </div>
 
           <div className="dashboard-card">
             <p className="text-gray-600">Pending Issues</p>
-            <h3 className="text-2xl font-bold text-gray-900">{stats.pendingIssues}</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{dashboard.pending}</h3>
             <div className="text-sm text-gray-500 mt-2">Use filters for details</div>
           </div>
         </div>
