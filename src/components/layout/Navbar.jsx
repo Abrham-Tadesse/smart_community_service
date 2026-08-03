@@ -95,7 +95,7 @@ const Navbar = () => {
                 aria-expanded={isDropdownOpen}
               >
                 {/* Notification bell for admin */}
-                {(user?.role === 'admin' || (user?.email || '').toLowerCase() === 'admin@example.com') && (
+                {user && (
                   <div className="nav-notifications" style={{ display: 'inline-block', marginRight: 12 }}>
                     <button
                       aria-label="Notifications"
@@ -153,6 +153,7 @@ const Navbar = () => {
                     </div>
                   </div>
                 )}
+                
                 <div className="user-avatar">
                   {user.name?.charAt(0).toUpperCase() || 'U'}
                 </div>

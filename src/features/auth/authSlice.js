@@ -31,9 +31,8 @@ export const register = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       // Remove confirmPassword from user data
-      const { confirmPassword, ...userDataToSave } = userData
+      const { ...userDataToSave } = userData
       const response = await registerUser(userDataToSave);
-      // localStorage.setItem('token', response.data.token)
       return response.data
 
     } catch (error) {

@@ -23,5 +23,9 @@ export const endpoints = {
   changeStatus : (issueId) =>`admin/issues/${issueId}/status`,
   recentActivities : "admin/recentActivities",
  
-  
+  // Notification endpoints
+    fetch : "/notifications",
+    readAllNotifications  : "/notifications/readAll",
+    eadSingleNotification : (notifId)=>`/notifications/${notifId}/read`
+
 }

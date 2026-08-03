@@ -46,7 +46,7 @@ function AppRoutes() {
           
           <Route element={<ProtectedRoute />}>
              <Route path="/dashboard" element={
-            user?.email === 'admin@example.com' ? <AdminDashboard /> : <CitizenDashboard />
+            user?.role === 'admin' ? <AdminDashboard /> : <CitizenDashboard />
              } />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/issues" element={<IssueList />} />
