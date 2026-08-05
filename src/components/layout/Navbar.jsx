@@ -2,23 +2,42 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../features/auth/authSlice';
-import { useCallback } from 'react';
 import logo from '../../assets/image/logo.png';
 import { fetchAllNotif,readAll,readOne } from '../../features/notifications/notificationSlice';
+
 
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false) // NEW STATE
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const dropdownRef = useRef(null) // NEW REF
   const { user } = useSelector((state) => state.auth);
   const {notifications,unreadCount,loading} = useSelector((state)=>state.notifications);
-
+  const notificationRef = useRef(null);
   // const [notifications, setNotifications] = useState([])
   // const unreadCount = notifications.filter(n => !n.read).length
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+
+
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(event.target)
+    ) {
+      setIsNotificationOpen(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -94,15 +113,28 @@ const Navbar = () => {
                     <button
                       aria-label="Notifications"
                       className="notification-bell"
+                      ref={notificationRef}
                       onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(false);
-                        dispatch(fetchAllNotif()); /* toggle separate menu below if needed */  const el = document.getElementById('notif-dropdown'); if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block' }}
+                        setIsNotificationOpen((prev) => !prev);
+                        dispatch(fetchAllNotif()); /* toggle separate menu below if needed */}}
                     >
                       🔔
                       {unreadCount > 0 && (
                         <span className="notif-count">{unreadCount}</span>
                       )}
                     </button>
-                    <div id="notif-dropdown" className="notif-dropdown" onClick={(e)=>e.stopPropagation()} style={{ display: 'none', position: 'absolute', right: 20, top: 60, width: 300, background: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 60 }}>
+        {isNotificationOpen && (
+
+
+                    <div ref={notificationRef} className="notif-dropdown" onClick={(e)=>e.stopPropagation()} style={{
+    position: "absolute",
+    right: 20,
+    top: 60,
+    width: 300,
+    background: "white",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    zIndex: 60,
+  }}>
                       <div style={{ padding: 8, borderBottom: '1px solid #eee' }}>
                         <strong>Notifications</strong>
                       </div>
@@ -120,8 +152,8 @@ const Navbar = () => {
                               <Link to={`/issues/${n.issue}`} onClick={(e) => {
                                 e.stopPropagation()
                                 dispatch(readOne(n._id));
-                                const el = document.getElementById('notif-dropdown')
-                                if (el) el.style.display = 'none'
+                                setIsNotificationOpen(false);
+
                               }}>View Issue</Link>
                             </div>)}
                            
@@ -132,11 +164,12 @@ const Navbar = () => {
                         <button className="btn btn-outline btn-small" onClick={async(e) => {
                           e.stopPropagation()
                           await dispatch(readAll())
-                          const el = document.getElementById('notif-dropdown')
-                          if (el) el.style.display = 'none'
+                          setIsNotificationOpen(false);
                         }}>Mark all read</button>
                       </div>
                     </div>
+
+      )}
                   </div>
                 )}
                 
