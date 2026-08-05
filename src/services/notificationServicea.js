@@ -2,13 +2,14 @@ import API from "./api";
 import { endpoints } from "./endpoints";
 
 export const fetchNotifications = ()=>{
-    return API.get(endpoints.fetchNotifications());
+
+    return API.get(endpoints.fetch);
 }
 
 export const readAllNotif = ()=>{
-    return API.patch(endpoints.readAllNotifications());
+    return API.patch(endpoints.readAllNotifications);
 }
 
-export const readOneNotification = (notId)=>{
-    return API.patch(endpoints.readSingleNotification(notId))
+export const readOneNotification = (notifId)=>{
+    return API.patch(endpoints.readSingleNotification(notifId))
 }

@@ -1,17 +1,22 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { logout } from '../../features/auth/authSlice'
-import { useCallback } from 'react'
-import logo from '../../assets/image/logo.png'
+import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../features/auth/authSlice';
+import { useCallback } from 'react';
+import logo from '../../assets/image/logo.png';
+import { fetchAllNotif,readAll,readOne } from '../../features/notifications/notificationSlice';
+
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false) // NEW STATE
   const dropdownRef = useRef(null) // NEW REF
-  const { user } = useSelector((state) => state.auth)
-  const [notifications, setNotifications] = useState([])
-  const unreadCount = notifications.filter(n => !n.read).length
+  const { user } = useSelector((state) => state.auth);
+  const {notifications,unreadCount,loading} = useSelector((state)=>state.notifications);
+
+  // const [notifications, setNotifications] = useState([])
+  // const unreadCount = notifications.filter(n => !n.read).length
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -22,35 +27,21 @@ const Navbar = () => {
         setIsDropdownOpen(false)
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
 
-  // Load notifications (admin only)
-  const loadNotifications = useCallback(() => {
-    try {
-      const all = JSON.parse(localStorage.getItem('notifications') || '[]')
-      setNotifications(all || [])
-    } catch (e) {
-      setNotifications([])
-    }
-  }, [])
+
+
 
   useEffect(() => {
-    if (user?.role === 'admin' || (user?.email || '').toLowerCase() === 'admin@example.com') {
-      loadNotifications()
-      const handler = () => loadNotifications()
-      window.addEventListener('notificationsUpdated', handler)
-      window.addEventListener('storage', handler)
-      return () => {
-        window.removeEventListener('notificationsUpdated', handler)
-        window.removeEventListener('storage', handler)
-      }
+    if (user) {
+      // console.log("Dispatching fetchAllNotif");
+   dispatch(fetchAllNotif());
     }
-  }, [user, loadNotifications])
+  }, [user, dispatch])
 
   const handleLogout = () => {
     dispatch(logout())
@@ -70,6 +61,9 @@ const Navbar = () => {
   const handleDropdownLinkClick = () => {
     setIsDropdownOpen(false)
   }
+
+// console.log("Notifications:", notifications);
+
 
   return (
     <nav className="navbar">
@@ -100,7 +94,8 @@ const Navbar = () => {
                     <button
                       aria-label="Notifications"
                       className="notification-bell"
-                      onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(false); /* toggle separate menu below if needed */ loadNotifications(); const el = document.getElementById('notif-dropdown'); if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block' }}
+                      onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(false);
+                        dispatch(fetchAllNotif()); /* toggle separate menu below if needed */  const el = document.getElementById('notif-dropdown'); if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block' }}
                     >
                       🔔
                       {unreadCount > 0 && (
@@ -112,42 +107,33 @@ const Navbar = () => {
                         <strong>Notifications</strong>
                       </div>
                       <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                        {notifications.length === 0 && <div style={{ padding: 12 }}>No notifications</div>}
-                        {notifications.map(n => (
-                          <div key={n.id} style={{ padding: 8, borderBottom: '1px solid #f4f4f4', background: n.read ? 'white' : '#f9fafb' }}>
-                            <div style={{ fontSize: 13 }}>{n.title}</div>
+                        {notifications?.length === 0 && <div style={{ padding: 12 }}>No notifications</div>}
+                        {notifications?.map(n => (
+                          <div key={n._id} onClick={()=>{
+                            if(!n.isRead){
+                              dispatch(readOne(n._id));
+                            }
+                          }} style={{ padding: 8, borderBottom: '1px solid #f4f4f4', background: n.isRead ? 'white' : '#f9fafb' }}>
+                            <div style={{ fontSize: 13 }}>{n.message}</div>
                             <div style={{ fontSize: 12, color: '#666' }}>{new Date(n.createdAt).toLocaleString()}</div>
-                            <div style={{ marginTop: 6 }}>
-                              <Link to={`/issues/${n.issueId}`} onClick={(e) => {
+                            {n.issue && ( <div style={{ marginTop: 6 }}>
+                              <Link to={`/issues/${n.issue}`} onClick={(e) => {
                                 e.stopPropagation()
-                                // mark read
-                                try {
-                                  const all = JSON.parse(localStorage.getItem('notifications') || '[]')
-                                  const next = all.map(x => x.id === n.id ? { ...x, read: true } : x)
-                                  localStorage.setItem('notifications', JSON.stringify(next))
-                                  window.dispatchEvent(new CustomEvent('notificationsUpdated'))
-                                } catch (e) {}
-                                // close notif dropdown
+                                dispatch(readOne(n._id));
                                 const el = document.getElementById('notif-dropdown')
                                 if (el) el.style.display = 'none'
                               }}>View Issue</Link>
-                            </div>
+                            </div>)}
+                           
                           </div>
                         ))}
                       </div>
                       <div style={{ padding: 8, borderTop: '1px solid #eee', textAlign: 'right' }}>
-                        <button className="btn btn-outline btn-small" onClick={(e) => {
+                        <button className="btn btn-outline btn-small" onClick={async(e) => {
                           e.stopPropagation()
-                          try {
-                            const all = JSON.parse(localStorage.getItem('notifications') || '[]')
-                            const next = all.map(x => ({ ...x, read: true }))
-                            localStorage.setItem('notifications', JSON.stringify(next))
-                            window.dispatchEvent(new CustomEvent('notificationsUpdated'))
-                          } catch (e) {}
-                          // close the dropdown and refresh local state
+                          await dispatch(readAll())
                           const el = document.getElementById('notif-dropdown')
                           if (el) el.style.display = 'none'
-                          try { loadNotifications() } catch (e) {}
                         }}>Mark all read</button>
                       </div>
                     </div>

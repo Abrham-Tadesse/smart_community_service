@@ -256,7 +256,7 @@ const CreateIssue = () => {
 
                 <div className="alert alert-info">
                   <h4 className="mb-2">Priority Information</h4>
-                  <p className="text-sm">
+                  <div className="text-sm">
                     Your issue will be automatically prioritized based on:
                     <ul className="mt-1">
                       <li>Severity level</li>
@@ -264,7 +264,7 @@ const CreateIssue = () => {
                       <li>Duration of the issue</li>
                       <li>Importance of the area</li>
                     </ul>
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -26,6 +26,6 @@ export const endpoints = {
   // Notification endpoints
     fetch : "/notifications",
     readAllNotifications  : "/notifications/readAll",
-    eadSingleNotification : (notifId)=>`/notifications/${notifId}/read`
+    readSingleNotification : (notifId)=>`/notifications/${notifId}/read`
 
 }

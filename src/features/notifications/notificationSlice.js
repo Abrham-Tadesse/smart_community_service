@@ -13,12 +13,16 @@ const initialState = {
 
 export const fetchAllNotif = createAsyncThunk("/featchAllNotifications", 
     async(_,{rejectWithValue})=>{
+
+            // console.log("Thunk started");
      try {
         const response = await fetchNotifications();
+
+    //   console.log("Notifications from API:", response.data);
         return response.data;
         
      } catch (e) {
-         rejectWithValue(e.message);
+        return rejectWithValue(e.message);
      }
 })
 
@@ -32,9 +36,10 @@ export const readAll = createAsyncThunk("/readAllNotifications", async(_, {rejec
  }
 })
 
-export const readOne = createAsyncThunk("/readSingleNotification", async({notId}, {rejectWithValue})=>{
+export const readOne = createAsyncThunk("/readSingleNotification", async(notifId, {rejectWithValue})=>{
+    // console.log(notifId);
     try { 
-        const response = await readOneNotification(notId);
+        const response = await readOneNotification(notifId);
         return response.data;
         
     } catch (e) {
@@ -48,7 +53,7 @@ export const readOne = createAsyncThunk("/readSingleNotification", async({notId}
 
 
 const notificationSlice = createSlice({
-    name : notificationSlice,
+    name : "notifications",
     initialState,
     reducers : {
         clearNotificationError : ((state)=>{
@@ -72,7 +77,7 @@ const notificationSlice = createSlice({
         .addCase(fetchAllNotif.fulfilled, (state, action)=>{
             state.loading = false,
             state.notifications = action.payload,
-             state.unreadCount = action.payload.filter((notification)=> 
+             state.unreadCount = action.payload?.filter((notification)=> 
              !(notification.isRead)).length
         })
         .addCase(fetchAllNotif.rejected, (state, action)=>{
